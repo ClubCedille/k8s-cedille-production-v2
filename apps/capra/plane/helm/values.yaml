@@ -15,16 +15,11 @@ airgapped:
   # The boto module used by API does not use the CA bundles in the container, so we need to
   # mount the CA bundle into the API pod by passing it in as an environment
   # variable. Should be the full path to the CA bundle file, e.g.
-  # 
   s3SecretName: ""
   s3SecretKey: ""
 
 ingress:
   enabled: false
-  minioHost: ''
-  rabbitmqHost: ''
-  ingressClass: 'nginx'
-  ingress_annotations: { "nginx.ingress.kubernetes.io/proxy-body-size": "5m" }
 
 ssl:
   tls_secret_name: '' # If you have a custom TLS secret name
