@@ -8,10 +8,10 @@ metadata:
 spec:
   project: default
   destination:
-    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: preci
   source:
-    repoURL: https://github.com/ClubCedille/k8s-cedille-production
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     path: apps/preci/wordpress/prod
     targetRevision: HEAD
   syncPolicy:
