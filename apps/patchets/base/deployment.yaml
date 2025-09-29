@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commandes
+spec:
+  selector:
+    matchLabels:
+      app: commandes
+  template:
+    metadata:
+      labels:
+        app: commandes
+    spec:
+      containers:
+        - name: commandes
+          image: ghcr.io/clubcedille/patchets-commande:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: 512Mi
+          envFrom:
+            - configMapRef:
+                name: commandes-config
+            - secretRef:
+                name: app-secrets
+      imagePullSecrets:
+        - name: patchets-pull
