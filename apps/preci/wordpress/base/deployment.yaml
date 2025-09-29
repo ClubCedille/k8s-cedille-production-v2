@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preci-wordpress
+  namespace: preci
+  labels:
+    app: preci
+spec:
+  selector:
+    matchLabels:
+      app: preci
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: preci
+        tier: frontend
+    spec:
+      containers:
+        - image: wordpress:6.0.2 #us.gcr.io/fine-harbor-276700/wordpress-preci-acier:v1.0.0
+          name: preci-wordpress
+          envFrom:
+            - secretRef:
+                name: preci-secret
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: preci-wordpress-persistent-storage
+              mountPath: /var/www/html
+          resources: {}
+      volumes:
+        - name: preci-wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: preci-wp-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: preci-wp-pv-claim
+  namespace: preci
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: cephfs
