@@ -6,12 +6,12 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  project: default
+  project: k8s-cedille-production-v2
   destination:
-    server: https://kubernetes.default.svc
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: {{namespace}}
   source:
-    repoURL: https://github.com/ClubCedille/Plateforme-Cedille
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     path: apps/{{deployment_prefix}}/grav/prod
     targetRevision: HEAD
   syncPolicy:
