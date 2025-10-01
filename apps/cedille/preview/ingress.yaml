@@ -13,7 +13,7 @@ spec:
         - prefix: /
       services:
         - name: cedille-service
-          port: 8080
+          port: 80
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
