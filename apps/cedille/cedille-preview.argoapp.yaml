@@ -55,6 +55,15 @@ spec:
                 - op: replace
                   path: /spec/dnsNames/0
                   value: pr-{{.number}}.prodv2.cedille.club
+            - target:
+                group: projectcontour.io
+                version: v1
+                kind: HTTPProxy
+                name: cedille-preview
+              patch: |-
+                - op: replace
+                  path: /spec/routes/0/services/0/name
+                  value: cedille-service-pr-{{.number}}
       destination:
         server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
         namespace: 'cedille-pr-{{.number}}'
