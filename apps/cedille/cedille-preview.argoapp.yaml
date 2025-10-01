@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cedille-preview
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - pullRequest:
+      github:
+        owner: ClubCedille
+        repo: cedille.etsmtl.ca
+        tokenRef:
+          secretName: github-pr-token
+          key: token
+      requeueAfterSeconds: 180
+  template:
+    metadata:
+      name: 'cedille-pr-{{.number}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: "2"
+      labels:
+        app-type: "preview"
+        preview-pr-number: "{{.number}}"
+        preview-pr-branch: "{{.branch}}"
+        preview-pr-sha: "{{.head_sha}}"
+        source-owner: "ClubCedille"
+        source-repo: "cedille.etsmtl.ca"
+    spec:
+      project: k8s-cedille-production-v2
+      source:
+        repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+        targetRevision: HEAD
+        path: apps/cedille/preview
+        kustomize:
+          images:
+            - 'ghcr.io/clubcedille/cedille.etsmtl.ca:pr-{{.number}}'
+          nameSuffix: '-pr-{{.number}}'
+          patches:
+            - target:
+                kind: HTTPProxy
+                name: cedille-preview
+              patch: |-
+                - op: replace
+                  path: /spec/virtualhost/fqdn
+                  value: pr-{{.number}}.prodv2.cedille.club
+            - target:
+                kind: Certificate
+                name: cedille-preview-tls
+              patch: |-
+                - op: replace
+                  path: /spec/commonName
+                  value: pr-{{.number}}.prodv2.cedille.club
+                - op: replace
+                  path: /spec/dnsNames/0
+                  value: pr-{{.number}}.prodv2.cedille.club
+            - target:
+                group: projectcontour.io
+                version: v1
+                kind: HTTPProxy
+                name: cedille-preview
+              patch: |-
+                - op: replace
+                  path: /spec/routes/0/services/0/name
+                  value: cedille-service-pr-{{.number}}
+      destination:
+        server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+        namespace: 'cedille-pr-{{.number}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

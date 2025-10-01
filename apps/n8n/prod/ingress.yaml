@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-etsmtl"
+spec:
+  ingressClassName: contour
+  tls:
+    - hosts:
+        - n8n.prodv2.cedille.club
+      secretName: n8n-cert-tls
+  rules:
+    - host: n8n.prodv2.cedille.club
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 80
