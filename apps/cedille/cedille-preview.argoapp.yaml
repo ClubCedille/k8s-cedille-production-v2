@@ -25,7 +25,8 @@ spec:
         preview-pr-number: "{{.number}}"
         preview-pr-branch: "{{.branch}}"
         preview-pr-sha: "{{.head_sha}}"
-        source-repo: "ClubCedille/cedille.etsmtl.ca"
+        source-owner: "ClubCedille"
+        source-repo: "cedille.etsmtl.ca"
     spec:
       project: k8s-cedille-production-v2
       source:
