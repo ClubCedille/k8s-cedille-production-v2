@@ -12,7 +12,7 @@ terraform {
     organization = "cedille"
 
     workspaces {
-      name = "Plateforme-Cedille"
+      name = "k8s-cedille-production-v2"
     }
   }
 }
