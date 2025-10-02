@@ -14,7 +14,7 @@ spec:
         tokenRef:
           secretName: github-pr-token
           key: token
-      requeueAfterSeconds: 180
+      requeueAfterSeconds: 90
   template:
     metadata:
       name: 'cedille-pr-{{.number}}'
@@ -27,6 +27,7 @@ spec:
         preview-pr-sha: "{{.head_sha}}"
         source-owner: "ClubCedille"
         source-repo: "cedille.etsmtl.ca"
+        preview-host: "pr-{{ .number }}.cedille.prodv2.cedille.club"
     spec:
       project: k8s-cedille-production-v2
       source:
