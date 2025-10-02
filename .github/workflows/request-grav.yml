@@ -66,14 +66,14 @@ jobs:
                 output_file: apps/${{inputs.nom_club}}/grav/${{inputs.nom_club}}.argoapp.yaml
                 strict: true
                 variables: ${{ env.j2_vars }}
-            - name: Update kustomize files
-              run: |
-                cd $GITHUB_WORKSPACE/apps/${{inputs.nom_club}}/grav
-                kustomize create --resources ${{inputs.nom_club}}.argoapp.yaml
-                # cd $GITHUB_WORKSPACE/system/vault/configs/gh-roles
-                # kustomize edit add resource ${{inputs.nom_club}}-grav.yaml
-                # cd $GITHUB_WORKSPACE/apps/argo-apps
-                # kustomize edit add resource ../${{inputs.nom_club}}/grav/
+            # - name: Update kustomize files
+            #   run: |
+            #     cd $GITHUB_WORKSPACE/apps/${{inputs.nom_club}}/grav
+            #     kustomize create --resources ${{inputs.nom_club}}.argoapp.yaml
+            #     cd $GITHUB_WORKSPACE/system/vault/configs/gh-roles
+            #     kustomize edit add resource ${{inputs.nom_club}}-grav.yaml
+            #     cd $GITHUB_WORKSPACE/apps/argo-apps
+            #     kustomize edit add resource ../${{inputs.nom_club}}/grav/
             - name: Create Pull Request
               uses: peter-evans/create-pull-request@v5
               with:
