@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  project: default
+  project: k8s-cedille-production-v2
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: sonia-wikijs
@@ -18,5 +18,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
     automated:
-      selfHeal: false
-      prune: false
+      selfHeal: true
+      prune: true
