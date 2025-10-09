@@ -14,7 +14,7 @@ spec:
         tokenRef:
           secretName: github-pr-token
           key: token
-      requeueAfterSeconds: 180
+      requeueAfterSeconds: 90
   template:
     metadata:
       name: 'cedille-pr-{{.number}}'
@@ -27,6 +27,7 @@ spec:
         preview-pr-sha: "{{.head_sha}}"
         source-owner: "ClubCedille"
         source-repo: "cedille.etsmtl.ca"
+        preview-host: "pr-{{ .number }}.cedille.prodv2.cedille.club"
     spec:
       project: k8s-cedille-production-v2
       source:
@@ -35,7 +36,7 @@ spec:
         path: apps/cedille/preview
         kustomize:
           images:
-            - 'ghcr.io/clubcedille/cedille.etsmtl.ca:pr-{{.number}}'
+            - 'ghcr.io/clubcedille/cedille.etsmtl.ca:{{.head_sha}}'
           nameSuffix: '-pr-{{.number}}'
           patches:
             - target:
@@ -44,17 +45,17 @@ spec:
               patch: |-
                 - op: replace
                   path: /spec/virtualhost/fqdn
-                  value: pr-{{.number}}.prodv2.cedille.club
+                  value: pr-{{.number}}.cedille.prodv2.cedille.club
             - target:
                 kind: Certificate
                 name: cedille-preview-tls
               patch: |-
                 - op: replace
                   path: /spec/commonName
-                  value: pr-{{.number}}.prodv2.cedille.club
+                  value: pr-{{.number}}.cedille.prodv2.cedille.club
                 - op: replace
                   path: /spec/dnsNames/0
-                  value: pr-{{.number}}.prodv2.cedille.club
+                  value: pr-{{.number}}.cedille.prodv2.cedille.club
             - target:
                 group: projectcontour.io
                 version: v1

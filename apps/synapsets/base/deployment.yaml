@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: synapsets-web
-          image: clubcedille/synapsets.etsmtl.ca
+          image: clubcedille/synapsets.etsmtl.ca:latest
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
