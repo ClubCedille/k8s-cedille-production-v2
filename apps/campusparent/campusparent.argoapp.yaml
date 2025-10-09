@@ -4,7 +4,7 @@ metadata:
   name: campusparent
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: webapp=ghcr.io/campusparent-aufets/campusparent:latest
+    argocd-image-updater.argoproj.io/image-list: webapp=ghcr.io/campusparent-aufets/campusparent:1.0.2
     argocd-image-updater.argoproj.io/webapp.update-strategy: digest
     argocd-image-updater.argoproj.io/webapp.pull-secret: pullsecret:argocd/ghcr-campusparent-secret
 spec:
