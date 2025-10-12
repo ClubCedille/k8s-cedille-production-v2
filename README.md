@@ -1,6 +1,6 @@
 ﻿# k8s-cedille-production-v2
 
-Ce dépôt est conçu pour gérer le flux de travail GitOps pour le cluster de production. Il prend spécifiquement en charge les sites web pour les clubs étudiants et gère les déploiements uniques pour un club.
+Ce dépôt est conçu pour gérer le flux de travail GitOps pour le cluster production. Il prend spécifiquement en charge les sites web pour les clubs étudiants et gère les déploiements uniques pour un club.
 
 ## Liens Utiles
 
