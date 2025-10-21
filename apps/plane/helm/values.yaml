@@ -1,5 +1,4 @@
 planeVersion: stable
-release: plane
 dockerRegistry:
   enabled: false
 
