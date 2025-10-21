@@ -4,9 +4,5 @@ namespace: twenty
 resources:
   - resources/ingress.yaml
   - base/postgres.yaml
-helmCharts:
-  - name: twenty-crm
-    version: 0.1.0
-    repo: oci://ghcr.io/cloud-exit/charts/
-    releaseName: twenty
-    valuesFile: "helm/values.yaml"
+  - base/deployment.yaml
+  - base/service.yaml
