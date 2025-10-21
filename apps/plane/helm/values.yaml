@@ -1,5 +1,5 @@
 planeVersion: stable
-
+release: plane
 dockerRegistry:
   enabled: false
   host: "index.docker.io/v1/"
