@@ -40,7 +40,6 @@ spec:
               value: "cnpg-rw.twenty.svc.cluster.local"
             - name: PG_DATABASE_PORT
               value: "5432"
-            - name:
             - name: APP_SECRET
               valueFrom:
                 secretKeyRef:
