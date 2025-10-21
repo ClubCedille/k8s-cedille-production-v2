@@ -1,0 +1,44 @@
+serverUrl: https://twenty.prodv2.cedille.club
+
+image:
+  repository: twentyhq/twenty
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+ingress:
+  enabled: false
+
+storage:
+  type: pvc
+  pvc:
+    storageClassName: cephfs
+    accessMode: ReadWriteOnce
+    size: 10Gi
+
+redis:
+  enabled: false
+  externalSecretName: redis-credentials
+  hostKey: REDIS_HOST
+  passwordKey: REDIS_PASSWORD
+  urlKey: REDIS_URL
+
+postgres:
+  enabled: false
+  externalSecretName: postgres-credentials
+  hostKey: POSTGRES_HOST
+  userKey: POSTGRES_USER
+  passwordKey: POSTGRES_PASSWORD
+  databaseKey: POSTGRES_DB
+  urlKey: DATABASE_URL
+
+extraEnv: []
