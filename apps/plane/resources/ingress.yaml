@@ -20,6 +20,6 @@ spec:
             path: /
             backend:
               service:
-                name: plane
+                name: release-name-web
                 port:
                   number: 3000
