@@ -176,7 +176,7 @@ env:
   sentry_dsn: ""
   sentry_environment: ""
 
-  cors_allowed_origins: ""
+  cors_allowed_origins: "https://plane.prodv2.cedille.club"
   default_cluster_domain: cluster.local
 
   api_key_rate_limit: "60/minute"
