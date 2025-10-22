@@ -7,5 +7,5 @@ spec:
   selector:
     app: twentycrm
   ports:
-    - port: 80
+    - port: 3000
       targetPort: 3000

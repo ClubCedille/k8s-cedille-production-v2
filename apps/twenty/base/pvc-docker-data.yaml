@@ -4,7 +4,6 @@ metadata:
   name: twentycrm-docker-data-pvc
 spec:
   storageClassName: cephfs
-  volumeName: twentycrm-docker-data-pv
   accessModes:
     - ReadWriteOnce
   resources:
