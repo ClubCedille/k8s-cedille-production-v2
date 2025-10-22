@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: twentycrm-docker-data-pvc
+spec:
+  storageClassName: cephfs
+  volumeName: twentycrm-docker-data-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

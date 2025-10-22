@@ -3,6 +3,4 @@ kind: Kustomization
 namespace: twenty
 resources:
   - resources/ingress.yaml
-  - base/postgres.yaml
-  - base/deployment.yaml
-  - base/service.yaml
+  - base/

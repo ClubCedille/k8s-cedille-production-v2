@@ -20,6 +20,6 @@ spec:
             path: /
             backend:
               service:
-                name: twentycrm-service
+                name: twentycrm-server
                 port:
                   number: 80
