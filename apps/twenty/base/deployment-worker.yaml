@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: twentycrm-worker
+  name: twentycrm-worker
+  namespace: twentycrm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: twentycrm-worker
+  template:
+    metadata:
+      labels:
+        app: twentycrm-worker
+    spec:
+      containers:
+        - name: twentycrm
+          image: twentycrm/twenty:latest
+          imagePullPolicy: Always
+          env:
+            - name: SERVER_URL
+              value: "https://twenty.prodv2.cedille.club"
+            - name: PG_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: twenty
+                  key: PG_DATABASE_URL
+            - name: DISABLE_DB_MIGRATIONS
+              value: "false"
+            - name: STORAGE_TYPE
+              value: "local"
+            - name: "REDIS_URL"
+              value: "redis://twentycrm-redis.twenty.svc.cluster.local:6379"
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: twenty
+                  key: APP_SECRET
+          command:
+            - yarn
+            - worker:prod
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "250m"
+            limits:
+              memory: "2048Mi"
+              cpu: "1000m"
+          stdin: true
+          tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
