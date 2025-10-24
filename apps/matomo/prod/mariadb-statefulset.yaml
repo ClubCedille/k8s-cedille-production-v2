@@ -23,22 +23,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: matomo-db-secret
-              key: database
+                  key: database
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
                   name: matomo-db-secret
-              key: username
+                  key: username
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: matomo-db-secret
-              key: password
+                  key: password
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: matomo-db-secret
-              key: password
+                  key: password
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql

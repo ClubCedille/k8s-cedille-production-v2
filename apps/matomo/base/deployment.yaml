@@ -47,12 +47,6 @@ spec:
           ports:
             - name: http
               containerPort: 80
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
           volumeMounts:
             - name: matomo-data
               mountPath: /var/www/html/config
@@ -65,13 +59,4 @@ spec:
               cpu: 500m
               memory: 256Mi
               ephemeral-storage: 1Gi
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            runAsNonRoot: true
-            runAsUser: 33
-            runAsGroup: 33
-            capabilities:
-              drop: ["ALL"]
-            seccompProfile:
-              type: RuntimeDefault
+
