@@ -4,6 +4,5 @@ kind: Kustomization
 resources:
   - ../base/
   - ingress.yaml
-  - mariadb-secret.yaml
   - mariadb-svc.yaml
   - mariadb-statefulset.yaml
