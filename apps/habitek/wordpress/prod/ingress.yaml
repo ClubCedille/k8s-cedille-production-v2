@@ -10,10 +10,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - habitek.etsmtl.ca
+        - habitek.ca
       secretName: habitek-tls
   rules:
-    - host: habitek.etsmtl.ca
+    - host: habitek.ca
       http:
         paths:
           - pathType: Prefix
