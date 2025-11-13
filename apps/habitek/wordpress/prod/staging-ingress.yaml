@@ -11,7 +11,7 @@ spec:
   tls:
     - hosts:
         - habitek.prodv2.cedille.club
-      secretName: habitek-tls
+      secretName: habitek-staging-tls
   rules:
     - host: habitek.prodv2.cedille.club
       http:
