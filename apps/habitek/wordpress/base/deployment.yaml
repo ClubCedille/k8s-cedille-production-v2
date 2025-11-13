@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habitek-wordpress
+  namespace: habitek
+  labels:
+    app: habitek
+spec:
+  selector:
+    matchLabels:
+      app: habitek
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: habitek
+        tier: frontend
+    spec:
+      containers:
+        - image: wordpress:6.8.3-php8.1-apache
+          name: habitek-wordpress
+          envFrom:
+            - secretRef:
+                name: habitek-secret
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: habitek-wordpress-persistent-storage
+              mountPath: /var/www/html
+          resources: {}
+      volumes:
+        - name: habitek-wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: habitek-wp-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: habitek-wp-pv-claim
+  namespace: habitek
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: cephfs
