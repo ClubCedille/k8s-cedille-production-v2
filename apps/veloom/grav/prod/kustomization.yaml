@@ -25,3 +25,10 @@ patches:
       - op: replace
         path: /spec/path
         value: kv/data/veloom-grav/default/grav
+  - target:
+      kind: Deployment
+      name: grav
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: ghcr.io/clubcedille/grav:veloom
