@@ -2,16 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: habitek-svc
-  namespace: habitek
-  labels:
-    app: habitek-wordpress
 spec:
+  selector:
+    app: habitek
   ports:
     - name: http
       targetPort: 80
       protocol: TCP
       port: 80
-  type: ClusterIP
-  selector:
-    app: habitek-wordpress
-    tier: frontend
