@@ -5,6 +5,7 @@ namePrefix: veloom-
 
 resources:
   - ../../../../bases/grav
+  - ingress-staging.yaml
 
 patches:
   - path: vault-patch.yaml
