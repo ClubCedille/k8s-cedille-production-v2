@@ -11,7 +11,7 @@ spec:
   tls:
     - hosts:
         - habitek.ca
-      secretName: habitek-tls
+      secretName: habitek-staging-tls
   rules:
     - host: habitek.ca
       http:
