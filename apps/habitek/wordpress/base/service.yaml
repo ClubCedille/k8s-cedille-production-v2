@@ -4,7 +4,7 @@ metadata:
   name: habitek-svc
   namespace: habitek
   labels:
-    app: habitek
+    app: habitek-wordpress
 spec:
   ports:
     - name: http
@@ -13,5 +13,5 @@ spec:
       port: 80
   type: ClusterIP
   selector:
-    app: habitek
+    app: habitek-wordpress
     tier: frontend
