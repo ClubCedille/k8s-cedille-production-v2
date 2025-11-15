@@ -29,11 +29,18 @@ spec:
           volumeMounts:
             - name: habitek-wordpress-persistent-storage
               mountPath: /var/www/html
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/uploads.ini
+              subPath: uploads.ini
           resources: {}
       volumes:
         - name: habitek-wordpress-persistent-storage
           persistentVolumeClaim:
             claimName: habitek-wp-pv-claim
+        - name: php-config
+          configMap:
+            defaultMode: 420
+            name: wp-php-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -47,3 +54,15 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: cephfs
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wp-php-config
+data:
+  uploads.ini: |-
+    file_uploads = On
+    upload_max_filesize = 256M
+    post_max_size = 256M
+    memory_limit = 64M
+    max_execution_time = 600
