@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planifets-backend
+  annotations:
+    kube-score/ignore: pod-networkpolicy, pod-probes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: planifets-backend
+  template:
+    metadata:
+      labels:
+        app: planifets-backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - planifets-backend
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: planifets-backend
+          image: ghcr.io/applets/planifets-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+            - name:  FRONTEND_URL
+              value: https://planifets.prodv2.cedille.club
+            # PostgreSQL Configuration
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cnpg-secret
+                  key: password
+            - name: POSTGRES_DB
+              value: planifetsDB
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@cnpg-rw.planifets.svc.cluster.local:5432/planifetsDB?schema=public"
+            - name: LOG_LEVELS
+              value: "log,error,warn,debug,verbose"
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 800m
+              memory: 500Mi
+              ephemeral-storage: 256Mi
+            limits:
+              cpu: 1500m
+              memory: 750Mi
+              ephemeral-storage: 1Gi
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: planifets-backend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: planifets-backend
