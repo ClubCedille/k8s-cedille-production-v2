@@ -73,7 +73,7 @@ spec:
           securityContext:
             runAsUser: 10001
             runAsGroup: 10001
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
