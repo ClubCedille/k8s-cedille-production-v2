@@ -12,6 +12,9 @@ spec:
     - secretName: planifets-service-tls
       hosts:
         - planifets.prodv2.cedille.club
+    - secretName: planifets-backend-service-tls
+      hosts:
+        - backend.planifets.prodv2.cedille.club
   rules:
     - host: backend.planifets.prodv2.cedille.club
       http:
