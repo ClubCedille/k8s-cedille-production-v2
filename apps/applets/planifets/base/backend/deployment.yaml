@@ -38,17 +38,11 @@ spec:
             - name:  FRONTEND_URL
               value: https://planifets.prodv2.cedille.club
             # PostgreSQL Configuration
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: cnpg-secret
-                  key: password
-            - name: POSTGRES_DB
-              value: planifetsDB
-            - name: DATABASE_URL
-              value: "postgresql://postgres:postgres@cnpg-rw.planifets.svc.cluster.local:5432/planifetsDB?schema=public"
+                  name: planifets-secret
+                  key: db_url
             - name: LOG_LEVELS
               value: "log,error,warn,debug,verbose"
           livenessProbe:
@@ -84,3 +78,4 @@ spec:
   selector:
     matchLabels:
       app: planifets-backend
+---

@@ -32,7 +32,7 @@ spec:
             - containerPort: 3000
           env:
             - name: NEXT_PUBLIC_API_BASE_URL
-              value: https://backend.planifets.prodv2.cedille.club/api
+              value: https://planifets.prodv2.cedille.club/api
             - name: APP_ENV
               value: production
             - name: CI
