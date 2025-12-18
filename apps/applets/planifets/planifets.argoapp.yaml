@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:latest
+    argocd-image-updater.argoproj.io/website.update-strategy: digest
+    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/applets/planifets-backend:latest
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
 spec:
   project: k8s-cedille-production-v2
   destination:
