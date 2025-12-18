@@ -12,7 +12,7 @@ spec:
     namespace: planifets
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/planifets/prod
+    path: apps/applets/planifets/prod
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
