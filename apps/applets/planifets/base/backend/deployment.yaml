@@ -45,6 +45,8 @@ spec:
                   key: db_url
             - name: LOG_LEVELS
               value: "log,error,warn,debug,verbose"
+            - name: YARN_CACHE_FOLDER
+              value: /tmp/.yarn-cache
           livenessProbe:
             tcpSocket:
               port: 3000
@@ -68,6 +70,12 @@ spec:
             runAsUser: 10001
             runAsGroup: 10001
             readOnlyRootFilesystem: false
+          volumeMounts:
+            - name: yarn-cache
+              mountPath: /tmp/.yarn-cache
+      volumes:
+        - name: yarn-cache
+          emptyDir: {}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
