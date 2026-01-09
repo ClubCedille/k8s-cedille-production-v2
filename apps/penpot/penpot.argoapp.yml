@@ -8,11 +8,11 @@ metadata:
 spec:
   destination:
     namespace: penpot
-    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-sandbox
-  project: k8s-cedille-sandbox
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+  project: default
   source:
     path: apps/penpot
-    repoURL: https://github.com/ClubCedille/k8s-cedille-sandbox
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     targetRevision: HEAD
   syncPolicy:
     automated:
