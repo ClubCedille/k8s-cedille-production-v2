@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: penpot
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  destination:
+    namespace: penpot
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-sandbox
+  project: k8s-cedille-sandbox
+  source:
+    path: apps/penpot
+    repoURL: https://github.com/ClubCedille/k8s-cedille-sandbox
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

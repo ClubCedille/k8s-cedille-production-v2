@@ -1,0 +1,25 @@
+#cnpg.yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cnpg
+spec:
+  instances: 3
+
+  bootstrap:
+    initdb:
+      database: penpot
+      owner: penpot
+      secret:
+        name: penpot-secret
+
+  storage:
+    size: 5Gi
+    storageClass: local-path
+  # Quelques paramètres de QOL
+  postgresql:
+    parameters:
+      max_connections: "200"
+      superuser_reserved_connections: "5"
+      statement_timeout: "30000"
+      idle_in_transaction_session_timeout: "30000"

@@ -1,0 +1,18 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: penpot
+spec:
+  virtualhost:
+    fqdn: penpot.sandbox.cedille.club
+    tls:
+      secretName: tls-delegation/sandbox-tls
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: penpot
+          port: 80
+      timeoutPolicy:
+        idle: 600s
+        response: 600s
