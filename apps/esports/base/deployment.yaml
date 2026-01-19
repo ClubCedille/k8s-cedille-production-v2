@@ -27,9 +27,9 @@ spec:
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: 5000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 10
           volumeMounts:
             - name: nginx-cache
