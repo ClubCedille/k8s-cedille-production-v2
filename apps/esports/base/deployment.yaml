@@ -28,7 +28,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 5000
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
@@ -37,7 +37,7 @@ spec:
             - name: nginx-run
               mountPath: /run
           ports:
-            - containerPort: 80
+            - containerPort: 5000
           resources:
             requests:
               cpu: 100m
@@ -49,7 +49,7 @@ spec:
               ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             runAsNonRoot: false
             capabilities:
               drop:
