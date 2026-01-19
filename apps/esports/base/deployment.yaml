@@ -51,7 +51,6 @@ spec:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
             runAsNonRoot: true
-            runAsUser: appuser
             capabilities:
               drop:
                 - ALL
