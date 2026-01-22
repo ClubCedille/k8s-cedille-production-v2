@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veloom-wordpress
+  namespace: veloom
+  labels:
+    app: veloom
+spec:
+  selector:
+    matchLabels:
+      app: veloom
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: veloom
+        tier: frontend
+    spec:
+      containers:
+        - image: wordpress:6.8.3-php8.1-apache
+          name: veloom-wordpress
+          envFrom:
+            - secretRef:
+                name: veloom-secret
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: veloom-wordpress-persistent-storage
+              mountPath: /var/www/html
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/uploads.ini
+              subPath: uploads.ini
+          resources: {}
+      volumes:
+        - name: veloom-wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: veloom-wp-pv-claim
+        - name: php-config
+          configMap:
+            defaultMode: 420
+            name: wp-php-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: veloom-wp-pv-claim
+  namespace: veloom
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: cephfs
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wp-php-config
+data:
+  uploads.ini: |-
+    file_uploads = On
+    upload_max_filesize = 256M
+    post_max_size = 256M
+    memory_limit = 64M
+    max_execution_time = 600
