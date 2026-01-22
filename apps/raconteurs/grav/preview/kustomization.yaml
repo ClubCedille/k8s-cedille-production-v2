@@ -1,10 +1,32 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-resources:
-  - ../base
-  - ingress.yaml
+namePrefix: raconteurs-
 
-replicas:
-  - name: raconteurs
-    count: 1
+resources:
+  - ../../../../bases/grav
+
+patches:
+  - target:
+      kind: Ingress
+      name: grav-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: raconteurs-preview.prodv2.cedille.club
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: raconteurs-preview.prodv2.cedille.club
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+        value: letsencrypt-http
+  - target:
+      kind: Deployment
+      name: grav
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: ghcr.io/clubcedille/grav:raconteurs
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: master
