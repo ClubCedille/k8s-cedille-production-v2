@@ -13,7 +13,7 @@ spec:
         - veloom.etsmtl.ca
       secretName: veloom-prod-tls
   rules:
-    - host: veloom.ca
+    - host: veloom.etsmtl.ca
       http:
         paths:
           - pathType: Prefix
