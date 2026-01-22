@@ -33,7 +33,7 @@ spec:
       source:
         repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
         targetRevision: HEAD
-        path: apps/raconteurs/preview
+        path: apps/raconteurs/grav/preview
         kustomize:
           images:
             - 'ghcr.io/clubcedille/raconteurs.etsmtl.ca:{{.head_sha}}'
