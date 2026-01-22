@@ -10,7 +10,7 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - veloom-wp.prodv2.cedille.club
+        - veloom.prodv2.cedille.club
       secretName: veloom-staging-tls
   rules:
     - host: veloom.prodv2.cedille.club
