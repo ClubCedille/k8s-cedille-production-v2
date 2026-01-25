@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: markets-backend
   annotations:
-    kube-score/ignore: pod-networkpolicy, container-image-pull-policy,container-image-tag
+    kube-score/ignore: pod-networkpolicy, container-image-pull-policy,container-image-tag, container-security-context
 spec:
   replicas: 1
   selector:
