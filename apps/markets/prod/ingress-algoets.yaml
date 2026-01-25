@@ -10,10 +10,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - market.algoets.ca
+        - markets.algoets.ca
       secretName: markets-algoets-tls
   rules:
-    - host: market.algoets.ca
+    - host: markets.algoets.ca
       http:
         paths:
           - path: /
