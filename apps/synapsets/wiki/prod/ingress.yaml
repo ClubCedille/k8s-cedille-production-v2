@@ -11,9 +11,9 @@ spec:
   tls:
     - secretName: wikijs-cert-tls
       hosts:
-        - wiki.sonia.etsmtl.ca
+        - wiki.synapsets.etsmtl.ca
   rules:
-    - host: wiki.sonia.etsmtl.ca
+    - host: wiki.synapsets.etsmtl.ca
       http:
         paths:
           - path: /
