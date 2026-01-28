@@ -32,7 +32,13 @@ spec:
             - name: php-config
               mountPath: /usr/local/etc/php/conf.d/uploads.ini
               subPath: uploads.ini
-          resources: {}
+          resources:
+            requests:
+              cpu: 4
+              memory: 1024Mi
+            limits:
+              cpu: 6
+              memory: 2048Mi
       volumes:
         - name: veloom-wordpress-persistent-storage
           persistentVolumeClaim:
@@ -64,5 +70,5 @@ data:
     file_uploads = On
     upload_max_filesize = 256M
     post_max_size = 256M
-    memory_limit = 64M
+    memory_limit = 256M
     max_execution_time = 600
