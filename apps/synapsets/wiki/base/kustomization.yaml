@@ -28,6 +28,6 @@ helmCharts:
         persistence:
           enabled: true
           size: 10Gi
-          storageClass: ceph
+          storageClass: cephfs
       startupProbe:
         initialDelaySeconds: 10

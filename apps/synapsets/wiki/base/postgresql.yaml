@@ -13,7 +13,7 @@ spec:
         name: wikijs-postgres-secret
   storage:
     size: 10Gi
-    storageClass: ceph
+    storageClass: cephfs
   postgresql:
     parameters:
       max_connections: "200"
