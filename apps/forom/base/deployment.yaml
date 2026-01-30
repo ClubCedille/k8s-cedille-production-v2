@@ -17,8 +17,8 @@ spec:
         - name: forom
           image: ghcr.io/clubcedille/forom:latest
           resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-            ports:
-              - containerPort: 5173
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5173
