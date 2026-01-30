@@ -11,9 +11,9 @@ spec:
   tls:
     - secretName: wikijs-cert-tls
       hosts:
-        - wiki.synapsets.etsmtl.ca
+        - wiki.synapsets.prodv2.cedille.club
   rules:
-    - host: wiki.synapsets.etsmtl.ca
+    - host: wiki.synapsets.prodv2.cedille.club
       http:
         paths:
           - path: /
