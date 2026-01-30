@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=values.schema.json
 ## Default values for Penpot
 
 global:
@@ -8,7 +9,7 @@ global:
   # @section -- Global parameters
   valkeyEnabled: false
   # -- Whether to deploy the Bitnami Redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration.
-  # *DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Valkey. Although migration is recommended, Penpot will work seamlessly with compatible Redis versions.
+  # *DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Valkey. Although migration is recommended, Penpot will work seamlessly with compatible Redis versions. 
   # @section -- Global parameters
   redisEnabled: false
   # -- Global Docker registry secret names.
@@ -81,23 +82,23 @@ config:
     username: "penpot"
     # -- The database password to use.
     # @section -- Configuration parameters
-    password: "topnep"
+    password: "penpot"
     # -- The PostgreSQL database to use.
     # @section -- Configuration parameters
     database: "penpot"
     # -- The name of an existing secret.
     # @section -- Configuration parameters
-    existingSecret: ""
+    existingSecret: "penpot-secret"
     secretKeys:
       # -- The postgresql uri key to use from an existing secret. (postgresql://host:port/database).
       # @section -- Configuration parameters
-      postgresqlUriKey: ""
+      postgresqlUriKey: "host"
       # -- The username key to use from an existing secret.
       # @section -- Configuration parameters
-      usernameKey: ""
+      usernameKey: "username"
       # -- The password key to use from an existing secret.
       # @section -- Configuration parameters
-      passwordKey: ""
+      passwordKey: "password"
 
   redis:
     # -- The Valkey host to connect to. Empty to use dependencies
@@ -120,7 +121,7 @@ config:
   objectsStorage:
     # -- The storage backend for different objects (assets, old data...) to use. Use `fs` for filesystem, and `s3` for S3.
     # @section -- Configuration parameters
-    storageBackend: "fs"
+    storageBackend: "cephfs"
     filesystem:
       # -- The storage directory to use if you chose the filesystem storage backend.
       # @section -- Configuration parameters
@@ -624,17 +625,34 @@ exporter:
 
 persistence:
   assets:
+    # -- Enable Penpot objects persistence using Persistent Volume Claims.
+    # @section -- Persistence parameters
     enabled: true
-    storageClass: "cephfs"
-    size: 10Gi
-
+    # -- Penpot objects persistent Volume storage class.
+    # If defined, storageClassName: <storageClass>.
+    # If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner.
+    # @section -- Persistence parameters
+    storageClass: ""
+    # -- Penpot objects persistent Volume size.
+    # @section -- Persistence parameters
+    size: 20Gi
+    # -- The name of an existing PVC to use for Penpot objects persistence.
+    # @section -- Persistence parameters
+    existingClaim: ""
+    # -- Penpot objects persistent Volume access modes.
+    # @section -- Persistence parameters
+    accessModes:
+      - ReadWriteOnce
+    # -- Penpot objects persistent Volume Claim annotations.
+    # @section -- Persistence parameters
+    annotations: {}
   exporter:
     # -- Enable exporter persistence using Persistent Volume Claims. If exporter.replicaCount you have to enable it.
     # @section -- Persistence parameters
-    enabled: true
+    enabled: false
     # -- Exporter persistent Volume storage class. Empty is choosing the default provisioner by the provider.
     # @section -- Persistence parameters
-    storageClass: "cephfs"
+    storageClass: ""
     # -- Exporter persistent Volume size.
     # @section -- Persistence parameters
     size: 10Gi
@@ -650,7 +668,36 @@ persistence:
     annotations: {}
 
 ingress:
+  # -- Enable (frontend) Ingress Controller.
+  # @section -- Ingress parameters
   enabled: false
+  # -- The Ingress className.
+  # @section -- Ingress parameters
+  className: ""
+  # -- Mapped annotations for the ingress crontroller.
+  # E.g.
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
+  # @section -- Ingress parameters
+  annotations: {}
+  # -- Root path for every hosts.
+  # @section -- Ingress parameters
+  path: "/"
+  # -- Array style hosts for the (frontend) ingress crontroller.
+  # @section -- Ingress parameters
+  hosts:
+    # -- The default external hostname to access to the penpot app.
+    # @section -- Ingress parameters
+    - "penpot.example.com"
+  # -- Array style TLS secrets for the (frontend) ingress crontroller.
+  # E.g.
+  # tls:
+  #   - secretName: penpot.example.com-tls
+  #     hosts:
+  #       - penpot.example.com
+  # @section -- Ingress parameters
+  tls: []
 
 route:
   # -- Enable Openshift/OKD Route. Check [the official doc](https://docs.openshift.com/container-platform/4.16/networking/routes/route-configuration.html). When it is enabled, all fsGroup and runAsUser must be changed to null.
@@ -720,7 +767,7 @@ valkey:
   # -- Common configuration to be appended to valkey.conf (as a block of configuration lines).
   # @section -- Valkey Dependencie parameters
   commonConfiguration: |
-    ## Recommended values for most Penpot instances.
+    ## Recommended values for most Penpot instances. 
     ## You can modify this value to follow your policies.
 
     # Set maximum memory Valkey will use.
@@ -737,7 +784,7 @@ valkey:
     maxmemory-policy volatile-lfu
 
 # Redis configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/redis))
-# DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Velkey. Although migration is recommended. Penpot will work seamlessly with compatible Redis versions.
+# DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Velkey. Although migration is recommended. Penpot will work seamlessly with compatible Redis versions. 
 redis:
   image:
     repository: bitnamilegacy/redis
