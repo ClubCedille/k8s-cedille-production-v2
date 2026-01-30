@@ -14,11 +14,11 @@ spec:
         app: forom
     spec:
       containers:
-      - name: forom
-        image: ghcr.io/clubcedille/forom:latest
-        resources:
+        - name: forom
+          image: ghcr.io/clubcedille/forom:latest
+          resources:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        ports:
-        - containerPort: 5173
+            ports:
+              - containerPort: 5173

@@ -5,9 +5,9 @@ metadata:
   name: forom-service
 spec:
   type: ClusterIP
-  clusterIP: None # headless service
+  clusterIP: None
   selector:
     app: forom
   ports:
-  - port: 5173
-    targetPort: 5173
+    - port: 5173
+      targetPort: 5173
