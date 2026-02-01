@@ -6,8 +6,12 @@ data:
   custom-nginx.conf: |
     server {
       listen 8080;
+      server_name _;
+
+      root /usr/share/nginx/html;
+      index index.html;
+
       location / {
-          root /usr/share/nginx/html;
-          index index.html index.htm;
+        try_files $uri $uri/ /index.html;
       }
     }

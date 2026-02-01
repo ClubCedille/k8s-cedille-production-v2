@@ -9,5 +9,5 @@ spec:
   selector:
     app: forom
   ports:
-    - port: 5173
-      targetPort: 5173
+    - port: 80
+      targetPort: 8080
