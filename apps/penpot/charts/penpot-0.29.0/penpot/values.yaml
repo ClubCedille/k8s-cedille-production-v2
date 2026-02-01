@@ -9,7 +9,7 @@ global:
   # @section -- Global parameters
   valkeyEnabled: false
   # -- Whether to deploy the Bitnami Redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration.
-  # *DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Valkey. Although migration is recommended, Penpot will work seamlessly with compatible Redis versions.
+  # *DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Valkey. Although migration is recommended, Penpot will work seamlessly with compatible Redis versions. 
   # @section -- Global parameters
   redisEnabled: false
   # -- Global Docker registry secret names.
@@ -88,17 +88,17 @@ config:
     database: "penpot"
     # -- The name of an existing secret.
     # @section -- Configuration parameters
-    existingSecret: "penpot-secret"
+    existingSecret: ""
     secretKeys:
       # -- The postgresql uri key to use from an existing secret. (postgresql://host:port/database).
       # @section -- Configuration parameters
-      postgresqlUriKey: "host"
+      postgresqlUriKey: ""
       # -- The username key to use from an existing secret.
       # @section -- Configuration parameters
-      usernameKey: "username"
+      usernameKey: ""
       # -- The password key to use from an existing secret.
       # @section -- Configuration parameters
-      passwordKey: "password"
+      passwordKey: ""
 
   redis:
     # -- The Valkey host to connect to. Empty to use dependencies
@@ -121,7 +121,7 @@ config:
   objectsStorage:
     # -- The storage backend for different objects (assets, old data...) to use. Use `fs` for filesystem, and `s3` for S3.
     # @section -- Configuration parameters
-    storageBackend: "cephfs"
+    storageBackend: "fs"
     filesystem:
       # -- The storage directory to use if you chose the filesystem storage backend.
       # @section -- Configuration parameters
@@ -767,7 +767,7 @@ valkey:
   # -- Common configuration to be appended to valkey.conf (as a block of configuration lines).
   # @section -- Valkey Dependencie parameters
   commonConfiguration: |
-    ## Recommended values for most Penpot instances.
+    ## Recommended values for most Penpot instances. 
     ## You can modify this value to follow your policies.
 
     # Set maximum memory Valkey will use.
@@ -784,7 +784,7 @@ valkey:
     maxmemory-policy volatile-lfu
 
 # Redis configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/redis))
-# DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Velkey. Although migration is recommended. Penpot will work seamlessly with compatible Redis versions.
+# DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Velkey. Although migration is recommended. Penpot will work seamlessly with compatible Redis versions. 
 redis:
   image:
     repository: bitnamilegacy/redis

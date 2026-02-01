@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "penpot.fullname" . }}-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+  {{- with .Values.exporter.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.exporter.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "penpot.exporterSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: penpot-exporter
+        {{- include "penpot.exporterSelectorLabels" . | nindent 8 }}
+        {{- with .Values.exporter.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.exporter.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "penpot.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-exporter
+          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
+          imagePullPolicy: {{ .Values.exporter.image.imagePullPolicy }}
+          {{- with .Values.exporter.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: PENPOT_PUBLIC_URI
+              value: {{ print "http://" (include "penpot.fullname" .) ":" .Values.frontend.service.port }}
+            - name: PENPOT_REDIS_URI
+              {{- if not .Values.config.redis.secretKeys.redisUriKey }}
+                {{- if .Values.config.redis.host }}
+              value: "redis://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}/{{ .Values.config.redis.database }}"
+                {{- else }}
+                  {{- if .Values.global.valkeyEnabled }}
+              value: {{ print "redis://" (include "penpot.fullname" .) "-valkey-primary:" .Values.config.redis.port "/" .Values.config.redis.database }}
+                  {{- else }}
+              value: {{ print "redis://" (include "penpot.fullname" .) "-redis-master:" .Values.config.redis.port "/" .Values.config.redis.database }}
+                  {{- end }}
+                {{- end }}
+              {{- else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.redis.existingSecret }}
+                  key: {{ .Values.config.redis.secretKeys.redisUriKey }}
+              {{- end }}
+            - name: PENPOT_TEMPDIR
+              value: "/tmp/penpot-exporter"
+            # Extra environments
+          {{- with .Values.config.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.exporter.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /tmp/penpot-exporter
+              name: app-data
+              readOnly: false
+            {{- with .Values.exporter.volumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.exporter.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.exporter.resources | nindent 12 }}
+      {{- with .Values.exporter.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: app-data
+        {{- if .Values.persistence.exporter.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.exporter.existingClaim | default ( printf "%s-%s" ( include "penpot.fullname" . ) "data-exporter" ) }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      {{- with .Values.exporter.volumes }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
