@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: forom-ingress
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/tls-acme: "true"
 spec:
@@ -23,4 +23,4 @@ spec:
               service:
                 name: forom-service
                 port:
-                  number: 5173
+                  name: http
