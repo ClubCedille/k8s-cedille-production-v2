@@ -73,16 +73,13 @@ config:
   postgresql:
     # -- The PostgreSQL host to connect to. Empty to use dependencies.
     # @section -- Configuration parameters
-    host: "" # Ex.: "postgresql.penpot.svc.cluster.local"
+    host: "cnpg-rw.penpot.svc.cluster.local" # Ex.: "postgresql.penpot.svc.cluster.local"
     # -- The PostgreSQL host port to use.
     # @section -- Configuration parameters
     port: 5432
     # -- The database username to use.
     # @section -- Configuration parameters
     username: "penpot"
-    # -- The database password to use.
-    # @section -- Configuration parameters
-    password: "penpot"
     # -- The PostgreSQL database to use.
     # @section -- Configuration parameters
     database: "penpot"
@@ -90,12 +87,6 @@ config:
     # @section -- Configuration parameters
     existingSecret: "penpot-secret"
     secretKeys:
-      # -- The postgresql uri key to use from an existing secret. (postgresql://host:port/database).
-      # @section -- Configuration parameters
-      postgresqlUriKey: "host"
-      # -- The username key to use from an existing secret.
-      # @section -- Configuration parameters
-      usernameKey: "username"
       # -- The password key to use from an existing secret.
       # @section -- Configuration parameters
       passwordKey: "password"
