@@ -8,9 +8,6 @@ helmCharts:
     repo: https://charts.js.wiki
     valuesInline:
       securityContext:
-        capabilities:
-          drop:
-          - ALL
         readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 1000
@@ -31,7 +28,6 @@ helmCharts:
           registry: public.ecr.aws
           repository: bitnami/postgresql
           tag: 11.21.0-debian-11-r52
-        # postgresql-uri: cnpg-rw.sonia-wikijs.svc.cluster.local
         postgresqlDatabase: wiki
         postgresqlUser: postgres
         existingSecret: wikijs-postgres-secret
