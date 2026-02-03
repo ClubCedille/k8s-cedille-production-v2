@@ -36,10 +36,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - comets.etsmtl.ca
+        - comets-ets.com
       secretName: cedille-cert-tls-prod
   rules:
-    - host: comets.etsmtl.ca
+    - host: comets-ets.com
       http:
         paths:
           - path: /
