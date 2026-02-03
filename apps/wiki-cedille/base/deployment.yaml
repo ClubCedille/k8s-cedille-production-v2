@@ -54,13 +54,19 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
-            - name: nginx-tmp
-              mountPath: /opt/bitnami/nginx/tmp
+            - name: nginx-temp
+              mountPath: /var/cache/nginx
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
             - name: run-volume
               mountPath: /var/run
       volumes:
-        - name: nginx-tmp
+        - name: nginx-temp
           emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
         - name: run-volume
           emptyDir: {}
 ---
@@ -120,12 +126,18 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
-            - name: nginx-tmp
-              mountPath: /opt/bitnami/nginx/tmp
+            - name: nginx-temp
+              mountPath: /var/cache/nginx
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
             - name: run-volume
               mountPath: /var/run
       volumes:
-        - name: nginx-tmp
+        - name: nginx-temp
           emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
         - name: run-volume
           emptyDir: {}
