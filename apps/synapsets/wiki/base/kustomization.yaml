@@ -7,7 +7,13 @@ helmCharts:
     version: 2.2.17
     repo: https://charts.js.wiki
     valuesInline:
-      runAsNonRoot: true
+      securityContext:
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
       allowPrivilegeEscalation: false
       image.tag: 2.5
       image.pullPolicy: Always
@@ -15,9 +21,10 @@ helmCharts:
         cpu: 200m
         memory: 256Mi
         ephemeral-storage: 512Mi
+      resources.requests:
+        cpu: 200m
+        memory: 256Mi
       ingress.enabled: false
-      # externalPostgresql:
-      #   databaseURL: postgresql://postgres:postgres@cnpg-rw.sonia-wikijs.svc.cluster.local:5432/wiki
       postgresql:
         enabled: true #false
         image:
