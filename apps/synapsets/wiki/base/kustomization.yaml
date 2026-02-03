@@ -10,20 +10,22 @@ helmCharts:
       securityContext:
         readOnlyRootFilesystem: true
         runAsNonRoot: true
-        runAsUser: 1000
+        runAsUser: 10001
       allowPrivilegeEscalation: false
       image.tag: 2.5
       image.pullPolicy: Always
-      resources.limits:
-        cpu: 200m
-        memory: 256Mi
-        ephemeral-storage: 512Mi
-      resources.requests:
-        cpu: 200m
-        memory: 256Mi
+      resources:
+        limits:
+          cpu: 250m
+          memory: 512Mi
+          ephemeral-storage: 1024Mi
+        requests:
+          cpu: 200m
+          memory: 256Mi
+          ephemeral-storage: 512Mi
       ingress.enabled: false
       postgresql:
-        enabled: true #false
+        enabled: true
         image:
           registry: public.ecr.aws
           repository: bitnami/postgresql
