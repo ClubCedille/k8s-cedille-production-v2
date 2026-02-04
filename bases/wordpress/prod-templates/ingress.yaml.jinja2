@@ -10,10 +10,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - {{ nom_club }}.etsmtl.ca
+        - {{ hostname }}
       secretName: {{ nom_club }}-prod-tls
   rules:
-    - host: {{ nom_club }}.etsmtl.ca
+    - host: {{ hostname }}
       http:
         paths:
           - pathType: Prefix
@@ -24,7 +24,6 @@ spec:
                 port:
                   number: 80
 ---
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -50,4 +49,3 @@ spec:
                 name: wp-svc
                 port:
                   number: 80
----
