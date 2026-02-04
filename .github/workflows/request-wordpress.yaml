@@ -21,7 +21,7 @@ jobs:
         env:
             j2_vars: |
                 deployment_prefix=${{inputs.nom_club}}
-                namespace=${{inputs.nom_club}}-grav
+                namespace=${{inputs.nom_club}}
                 hostname=${{inputs.domaine}}
                 requester=${{github.event.sender.name}}
         steps:
