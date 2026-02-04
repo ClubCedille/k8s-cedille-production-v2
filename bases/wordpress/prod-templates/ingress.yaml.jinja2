@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ nom_club }}-prod-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: contour
+  tls:
+    - hosts:
+        - {{ nom_club }}.etsmtl.ca
+      secretName: {{ nom_club }}-prod-tls
+  rules:
+    - host: {{ nom_club }}.etsmtl.ca
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: wp-svc
+                port:
+                  number: 80
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ nom_club }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: contour
+  tls:
+    - hosts:
+        - {{ nom_club }}.prodv2.cedille.club
+      secretName: {{ nom_club }}-tls
+  rules:
+    - host: {{ nom_club }}.prodv2.cedille.club
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: wp-svc
+                port:
+                  number: 80
+---
