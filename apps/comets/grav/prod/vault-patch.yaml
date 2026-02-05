@@ -7,7 +7,7 @@ spec:
     metadata:
       annotations:
         vault.hashicorp.com/agent-inject-template-gitsync: |
-          {{- with secret "github/token/Comets-grav" -}}
+          {{- with secret "github/token/comets-grav" -}}
           enabled: true
           folders:
             - pages
@@ -43,7 +43,7 @@ spec:
           logging: true
           {{- end }}
         vault.hashicorp.com/agent-inject-template-admin_pwd: |
-          {{- with secret "kv/data/Comets-grav/default/grav/Comets-grav-init-pwd" -}}
+          {{- with secret "kv/data/comets-grav/default/grav/comets-grav-init-pwd" -}}
           state: enabled
           email: admin@comets.etsmtl.ca
           username: admin

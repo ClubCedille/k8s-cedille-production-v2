@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namePrefix: Comets-
+namePrefix: comets-
 
 resources:
   - ../../../../bases/grav
@@ -23,4 +23,4 @@ patches:
     patch: |-
       - op: replace
         path: /spec/path
-        value: kv/data/Comets-grav/default/grav
+        value: kv/data/comets-grav/default/grav

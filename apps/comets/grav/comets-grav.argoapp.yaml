@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: Comets-grav
+  name: comets-grav
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
@@ -9,10 +9,10 @@ spec:
   project: k8s-cedille-production-v2
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: Comets-grav
+    namespace: comets-grav
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/Comets/grav/prod
+    path: apps/comets/grav/prod
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
