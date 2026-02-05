@@ -14,7 +14,7 @@ spec:
     namespace: synapsets
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/synapsets/prod
+    path: apps/synapsets/web/prod
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
