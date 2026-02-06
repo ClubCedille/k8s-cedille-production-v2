@@ -21,7 +21,7 @@ spec:
     - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2.git
       ref: values-influx
       targetRevision: HEAD
-    - chart: grafana 
+    - chart: grafana
       helm:
         releaseName: grafana/grafana
         valueFiles:
@@ -30,7 +30,7 @@ spec:
       targetRevision: 10.5.15
     - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2.git
       ref: values-grafana
-      targetRevision: HEAD      
+      targetRevision: HEAD
   syncPolicy:
     syncOptions:
       - CreateNamespace=true

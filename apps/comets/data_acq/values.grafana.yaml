@@ -157,7 +157,7 @@ containerSecurityContext:
   privileged: false
   capabilities:
     drop:
-    - ALL
+      - ALL
   seccompProfile:
     type: RuntimeDefault
 
@@ -202,7 +202,7 @@ downloadDashboards:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-      - ALL
+        - ALL
     seccompProfile:
       type: RuntimeDefault
   envValueFrom: {}
@@ -981,7 +981,7 @@ sidecar:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-      - ALL
+        - ALL
     seccompProfile:
       type: RuntimeDefault
   # skipTlsVerify Set to true to skip tls verification for kube api calls
