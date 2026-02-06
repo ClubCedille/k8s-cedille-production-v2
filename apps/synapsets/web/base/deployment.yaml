@@ -26,13 +26,13 @@ spec:
             periodSeconds: 10
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
+              cpu: 100m
+              memory: 128Mi
               ephemeral-storage: 256Mi
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-              ephemeral-storage: 512Mi
+              cpu: 500m
+              memory: 256Mi
+              ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -41,3 +41,29 @@ spec:
             runAsGroup: 10001
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: nginx-temp
+              mountPath: /var/cache/nginx
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: run-volume
+              mountPath: /var/run
+      volumes:
+        - name: nginx-temp
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
+        - name: run-volume
+          emptyDir: {}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: synapsets-web-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: synapsets-web
