@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: data_acq
+  name: data-acq
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
@@ -9,7 +9,7 @@ spec:
   project: k8s-cedille-production-v2
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: data_acq
+    namespace: data-acq
   sources:
     - chart: influxdb
       helm:
