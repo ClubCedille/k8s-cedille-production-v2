@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: data_acq
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: k8s-cedille-production-v2
+  destination:
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+    namespace: data_acq
+  sources:
+    - chart: influxdb
+      helm:
+        releaseName: influxdata/influxdb2
+        valueFiles:
+          - $values-influx/apps/comets/data_acq/values.influxdb.yaml
+      repoURL: https://helm.influxdata.com
+      targetRevision: 2.1.2
+    - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2.git
+      ref: values-influx
+      targetRevision: HEAD
+    - chart: grafana 
+      helm:
+        releaseName: grafana/grafana
+        valueFiles:
+          - $values-grafana/apps/comets/data_acq/values.grafana.yaml
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 10.5.15
+    - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2.git
+      ref: values-grafana
+      targetRevision: HEAD      
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
