@@ -13,7 +13,7 @@ spec:
   sources:
     - chart: influxdb
       helm:
-        releaseName: influxdata/influxdb2
+        releaseName: influxdb2
         valueFiles:
           - $values-influx/apps/comets/data_acq/values.influxdb.yaml
       repoURL: https://helm.influxdata.com
@@ -23,7 +23,7 @@ spec:
       targetRevision: HEAD
     - chart: grafana
       helm:
-        releaseName: grafana/grafana
+        releaseName: grafana
         valueFiles:
           - $values-grafana/apps/comets/data_acq/values.grafana.yaml
       repoURL: https://grafana.github.io/helm-charts
