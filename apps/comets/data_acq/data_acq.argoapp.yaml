@@ -11,7 +11,7 @@ spec:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: data-acq
   sources:
-    - chart: influxdb
+    - chart: influxdb2
       helm:
         releaseName: influxdb2
         valueFiles:
