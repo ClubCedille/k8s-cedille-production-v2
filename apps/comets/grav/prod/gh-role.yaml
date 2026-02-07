@@ -8,5 +8,5 @@ spec:
     role: config-admin
   path: github
   repositories:
-  - comets.etsmtl.ca
+    - comets.etsmtl.ca
   organizationName: ClubCedille
