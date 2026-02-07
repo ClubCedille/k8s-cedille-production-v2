@@ -31,6 +31,9 @@ spec:
     - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2.git
       ref: values-grafana
       targetRevision: HEAD
+    - repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+      path: apps/comets/data_acq/resources
+      targetRevision: HEAD
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
