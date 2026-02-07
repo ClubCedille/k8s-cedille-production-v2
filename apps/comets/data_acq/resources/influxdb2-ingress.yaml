@@ -11,15 +11,15 @@ spec:
   tls:
     - secretName: influxdb2-tls
       hosts:
-      - influxdb.prodv2.cedille.club
+        - influxdb.prodv2.cedille.club
   rules:
     - host: influxdb.prodv2.cedille.club
       http:
         paths:
-        - pathType: Prefix
-          path: /
-          backend:
-            service:
-              name: influxdb2
-              port:
-                number: 80
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: influxdb2
+                port:
+                  number: 80
