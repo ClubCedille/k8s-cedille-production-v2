@@ -20,21 +20,6 @@ patches:
         value: {{ hostname }}
   - target:
       kind: RandomSecret
-      name: grav-init-pwd
-    patch: |-
-      - op: replace
-        path: /spec/path
-        value: kv/data/{{ namespace }}/default/grav
-  - target:
-      kind: RandomSecret
-      name: grav-sre-pwd
-    patch: |-
-      - op: replace
-        path: /spec/path
-        value: kv/data/{{ namespace }}/default/grav
-  - target:
-      kind: RandomSecret
-      name: grav-salt
     patch: |-
       - op: replace
         path: /spec/path
