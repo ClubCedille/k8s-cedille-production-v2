@@ -5,6 +5,7 @@ namePrefix: comets-
 
 resources:
   - ../../../../bases/grav
+  - gh-role.yaml
 
 patches:
   - path: vault-patch.yaml
@@ -20,7 +21,22 @@ patches:
         value: comets.etsmtl.ca
   - target:
       kind: RandomSecret
+      name: grav-init-pwd
     patch: |-
       - op: replace
         path: /spec/path
-        value: kv/data/comets-grav/default/grav
+        value: kv/data/comets-grav/default/grav/comets-grav-init-pwd
+  - target:
+      kind: RandomSecret
+      name: grav-sre-pwd
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/comets-grav/default/grav/comets-grav-sre-pwd
+  - target:
+      kind: RandomSecret
+      name: grav-salt
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/comets-grav/default/grav/comets-grav-salt
