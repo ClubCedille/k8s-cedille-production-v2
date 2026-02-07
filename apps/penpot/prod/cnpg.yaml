@@ -3,7 +3,7 @@ kind: Cluster
 metadata:
   name: cnpg
 spec:
-  instances: 3
+  instances: 1
 
   bootstrap:
     initdb:
