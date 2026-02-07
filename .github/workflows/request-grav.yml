@@ -52,13 +52,13 @@ jobs:
                 output_file: terraform/github/apps-repos/${{inputs.nom_club}}-grav.tf
                 strict: true
                 variables: ${{ env.j2_vars }}
-            # - name: Create GH auth set
-            #   uses: cuchi/jinja2-action@v1.3.0
-            #   with:
-            #     template: bases/grav/prod-templates/gh-role.yaml.jinja2
-            #     output_file: system/vault/configs/gh-roles/${{inputs.nom_club}}-grav.yaml
-            #     strict: true
-            #     variables: ${{ env.j2_vars }}
+            - name: Create GitHub Secret Engine Role
+              uses: cuchi/jinja2-action@v1.3.0
+              with:
+                template: bases/grav/prod-templates/gh-role.yaml.jinja2
+                output_file: apps/${{inputs.nom_club}}/grav/prod/gh-role.yaml
+                strict: true
+                variables: ${{ env.j2_vars }}
             - name: Create argo app
               uses: cuchi/jinja2-action@v1.3.0
               with:

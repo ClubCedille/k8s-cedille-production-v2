@@ -5,6 +5,7 @@ namePrefix: {{ deployment_prefix }}-
 
 resources:
   - ../../../../bases/grav
+  - gh-role.yaml
 
 patches:
   - path: vault-patch.yaml
@@ -20,7 +21,22 @@ patches:
         value: {{ hostname }}
   - target:
       kind: RandomSecret
+      name: grav-init-pwd
     patch: |-
       - op: replace
         path: /spec/path
-        value: kv/data/{{ namespace }}/default/grav
+        value: kv/data/{{ namespace }}/default/grav/{{ deployment_prefix }}-grav-init-pwd
+  - target:
+      kind: RandomSecret
+      name: grav-sre-pwd
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/{{ namespace }}/default/grav/{{ deployment_prefix }}-grav-sre-pwd
+  - target:
+      kind: RandomSecret
+      name: grav-salt
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/{{ namespace }}/default/grav/{{ deployment_prefix }}-grav-salt
