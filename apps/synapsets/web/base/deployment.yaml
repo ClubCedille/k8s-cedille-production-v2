@@ -1,29 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: synapsets-web
+  name: synapsets
   annotations:
-    kube-score/ignore: pod-networkpolicy,container-image-tag
+    kube-score/ignore: container-image-pull-policy,container-image-tag, pod-networkpolicy
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: synapsets-web
+      app: synapsets
   template:
     metadata:
       labels:
-        app: synapsets-web
+        app: synapsets
     spec:
       containers:
-        - name: synapsets-web
-          image: clubcedille/synapsets.etsmtl.ca:latest
+        - name: synapsets
+          image: ghcr.io/clubcedille/synapsets.etsmtl.ca:latest
           imagePullPolicy: Always
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-temp
+              mountPath: /var/cache/nginx
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: run-volume
+              mountPath: /var/run
           resources:
             requests:
               cpu: 100m
@@ -33,22 +37,18 @@ spec:
               cpu: 500m
               memory: 256Mi
               ephemeral-storage: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 10001
             runAsGroup: 10001
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: nginx-temp
-              mountPath: /var/cache/nginx
-            - name: config-volume
-              mountPath: /etc/nginx/conf.d
-              readOnly: true
-            - name: run-volume
-              mountPath: /var/run
       volumes:
         - name: nginx-temp
           emptyDir: {}
@@ -61,9 +61,9 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: synapsets-web-pdb
+  name: synapsets-pdb
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: synapsets-web
+      app: synapsets
