@@ -245,7 +245,7 @@ backend:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Backend parameters
-    pullPolicy: always
+    pullPolicy: Always
   # -- The number of replicas to deploy.
   # @section -- Backend parameters
   replicaCount: 1
@@ -340,7 +340,7 @@ frontend:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Frontend parameters
-    pullPolicy: always
+    pullPolicy: Always
   # -- The number of replicas to deploy.
   # @section -- Frontend parameters
   replicaCount: 1
@@ -427,7 +427,7 @@ exporter:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Exporter parameters
-    imagePullPolicy: always
+    imagePullPolicy: Always
   # -- The number of replicas to deploy. Enable persistence.exporter if you use more than 1 replicaCount
   # @section -- Exporter parameters
   replicaCount: 1
