@@ -89,24 +89,6 @@ config:
       passwordKey: "password"
       usernameKey: "username"
 
-  redis:
-    # -- The Valkey host to connect to. Empty to use dependencies
-    # @section -- Configuration parameters
-    host: "" # Ex.: "redis-headless.penpot.svc.cluster.local"
-    # -- The Valkey host port to use.
-    # @section -- Configuration parameters
-    port: 6379
-    # -- The Valkey database to connect to.
-    # @section -- Configuration parameters
-    database: "0"
-    # -- The name of an existing secret.
-    # @section -- Configuration parameters
-    existingSecret: ""
-    secretKeys:
-      # -- The redis uri key to use from an existing secret. (redis://:password@host:port/database).
-      # @section -- Configuration parameters
-      redisUriKey: ""
-
   objectsStorage:
     # -- The storage backend for different objects (assets, old data...) to use. Use `fs` for filesystem, and `s3` for S3.
     # @section -- Configuration parameters
@@ -680,4 +662,3 @@ valkey:
     #
     # For Penpot, volatile-lfu is recommended
     maxmemory-policy volatile-lfu
-
