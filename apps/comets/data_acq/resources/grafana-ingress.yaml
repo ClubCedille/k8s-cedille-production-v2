@@ -9,17 +9,17 @@ metadata:
 spec:
   ingressClassName: contour
   tls:
-  - secretName: grafana-tls
-    hosts:
-    - grafana.prodv2.cedille.club
+    - secretName: grafana-tls
+      hosts:
+      - grafana.prodv2.cedille.club
   rules:
-  - host: grafana.prodv2.cedille.club
-    http:
-      paths:
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: grafana
-            port:
-              number: 80
+    - host: grafana.prodv2.cedille.club
+      http:
+        paths:
+        - pathType: Prefix
+          path: /
+          backend:
+            service:
+              name: grafana
+              port:
+                number: 80
