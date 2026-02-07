@@ -70,7 +70,7 @@ config:
   objectsStorage:
     # -- The storage backend for different objects (assets, old data...) to use. Use `fs` for filesystem, and `s3` for S3.
     # @section -- Configuration parameters
-    storageBackend: "cephfs"
+    storageBackend: "fs"
     filesystem:
       # -- The storage directory to use if you chose the filesystem storage backend.
       # @section -- Configuration parameters
