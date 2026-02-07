@@ -2,21 +2,11 @@
 ## Default values for Penpot
 
 global:
-  # -- Whether to deploy the Bitnami PostgreSQL chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/postgresql) for configuration.
-  # @section -- Global parameters
   postgresqlEnabled: false
   # -- Whether to deploy the Bitnami Valkey chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/valkey) for configuration.
   # @section -- Global parameters
   valkeyEnabled: true
-  # -- Whether to deploy the Bitnami Redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration.
-  # *DEPRECATION WARNING: Since Penpot 2.8, Penpot has migrated from Redis to Valkey. Although migration is recommended, Penpot will work seamlessly with compatible Redis versions.
-  # @section -- Global parameters
   redisEnabled: false
-  # -- Global Docker registry secret names.
-  # E.g.
-  # imagePullSecrets:
-  #   - myRegistryKeySecretName
-  # @section -- Global parameters
   imagePullSecrets: []
 
 # -- To partially override common.names.fullname
@@ -69,18 +59,6 @@ config:
   privacyPolicyUri: ""
 
   postgresql:
-    # -- The PostgreSQL host to connect to. Empty to use dependencies.
-    # @section -- Configuration parameters
-    host: "cnpg-rw.penpot.svc.cluster.local"
-    # -- The PostgreSQL host port to use.
-    # @section -- Configuration parameters
-    port: 5432
-    # -- The database username to use.
-    # @section -- Configuration parameters
-    username: "penpot"
-    # -- The PostgreSQL database to use.
-    # @section -- Configuration parameters
-    database: "penpot"
     # -- The name of an existing secret.
     # @section -- Configuration parameters
     existingSecret: "penpot-secret"
@@ -267,7 +245,7 @@ backend:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Backend parameters
-    pullPolicy: IfNotPresent
+    pullPolicy: always
   # -- The number of replicas to deploy.
   # @section -- Backend parameters
   replicaCount: 1
@@ -362,7 +340,7 @@ frontend:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Frontend parameters
-    pullPolicy: IfNotPresent
+    pullPolicy: always
   # -- The number of replicas to deploy.
   # @section -- Frontend parameters
   replicaCount: 1
@@ -449,7 +427,7 @@ exporter:
     tag: 2.11.0
     # -- The image pull policy to use.
     # @section -- Exporter parameters
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: always
   # -- The number of replicas to deploy. Enable persistence.exporter if you use more than 1 replicaCount
   # @section -- Exporter parameters
   replicaCount: 1
@@ -545,10 +523,11 @@ persistence:
     # -- Penpot objects persistent Volume access modes.
     # @section -- Persistence parameters
     accessModes:
-      - ReadWriteOnce
+      - ReadWriteMany
     # -- Penpot objects persistent Volume Claim annotations.
     # @section -- Persistence parameters
     annotations: {}
+
   exporter:
     # -- Enable exporter persistence using Persistent Volume Claims. If exporter.replicaCount you have to enable it.
     # @section -- Persistence parameters
@@ -565,7 +544,7 @@ persistence:
     # -- Exporter persistent Volume access modes.
     # @section -- Persistence parameters
     accessModes:
-      - ReadWriteOnce
+      - ReadWriteMany
     # -- Exporter persistent Volume Claim annotations.
     # @section -- Persistence parameters
     annotations: {}
