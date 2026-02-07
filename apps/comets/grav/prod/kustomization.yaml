@@ -5,7 +5,6 @@ namePrefix: comets-
 
 resources:
   - ../../../../bases/grav
-  - gh-role.yaml
 
 patches:
   - path: vault-patch.yaml
