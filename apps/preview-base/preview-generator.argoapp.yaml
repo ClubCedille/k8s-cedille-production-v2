@@ -42,7 +42,7 @@ spec:
       labels:
         app-type: "preview"
         preview-pr-number: "{{.number}}"
-        preview-pr-branch: "{{.branch}}"
+        preview-pr-branch: "{{.branch | replace "/" "-"}}"
         preview-pr-sha: "{{.head_sha}}"
         source-owner: "ClubCedille"
         source-repo: "{{.repo}}"
