@@ -30,10 +30,10 @@ spec:
           password: "{{ .Data.token }}"
           webhook_enabled: '1'
           webhook: '/_git_webhook'
-          branch: master
+          branch: main
           remote:
             name: origin
-            branch: master
+            branch: main
           git:
             author: gitsync
             message: '(Grav GitSync) Automatic Commit'
