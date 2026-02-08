@@ -68,7 +68,7 @@ metadata:
 spec:
   storageClassName: cephfs
   accessModes:
-    - "ReadWriteOnce"
+    - "ReadWriteMany"
   resources:
     requests:
       storage: "10Mi"
@@ -80,7 +80,7 @@ metadata:
 spec:
   storageClassName: cephfs
   accessModes:
-    - "ReadWriteOnce"
+    - "ReadWriteMany"
   resources:
     requests:
       storage: "10Mi"
