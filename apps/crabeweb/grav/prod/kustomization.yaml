@@ -29,12 +29,5 @@ patches:
       name: grav
     patch: |-
       - op: replace
-        path: /spec/template/spec/containers/0/image
-        value: ghcr.io/clubcedille/grav:demo-crabe
-  - target:
-      kind: Deployment
-      name: grav
-    patch: |-
-      - op: replace
         path: /spec/template/spec/containers/0/readinessProbe/httpGet/path
         value: /accueil

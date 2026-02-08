@@ -5,3 +5,4 @@ resources:
   - network.yaml
   - deployment.yaml
   - random-secrets.yaml
+  - config-secret.yaml

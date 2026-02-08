@@ -6,8 +6,10 @@ spec:
   template:
     metadata:
       annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "secret-reader"
         vault.hashicorp.com/agent-inject-template-gitsync: |
-          {{- with secret "github/token/crabeweb-grav" -}}
+          {{- with secret "github/token/aeroets-grav" -}}
           enabled: true
           folders:
             - pages
@@ -22,7 +24,7 @@ spec:
             cron_enable: true
             cron_at: '*/10 * * * *'
           local_repository: null
-          repository: 'https://github.com/ClubCedille/crabe.demo.prodv2.cedille.club.git'
+          repository: 'https://github.com/ClubCedille/aeroets.etsmtl.ca.git'
           no_user: '0'
           user: x-access-token
           password: "{{ .Data.token }}"
@@ -43,9 +45,9 @@ spec:
           logging: true
           {{- end }}
         vault.hashicorp.com/agent-inject-template-admin_pwd: |
-          {{- with secret "kv/data/crabeweb-grav/default/grav/crabeweb-grav-init-pwd" -}}
+          {{- with secret "kv/data/aeroets-grav/default/grav/aeroets-grav-init-pwd" -}}
           state: enabled
-          email: admin@crabe.demo.prodv2.cedille.club
+          email: admin@aeroets.prodv2.cedille.club
           username: admin
           fullname: admin
           title: Administrator
@@ -56,4 +58,23 @@ spec:
             site:
               login: true
           password: "{{ .Data.data.password }}"
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-sre_pwd: |
+          {{- with secret "kv/data/aeroets-grav/default/grav/aeroets-grav-sre-pwd" -}}
+          state: enabled
+          email: sre@cedille.club
+          username: sre
+          fullname: SRE
+          title: SRE
+          access:
+            admin:
+              login: true
+              super: true
+            site:
+              login: true
+          password: "{{ .Data.data.password }}"
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-salt: |
+          {{- with secret "kv/data/aeroets-grav/default/grav/aeroets-grav-salt" -}}
+          salt: "{{ .Data.data.salt }}"
           {{- end }}
