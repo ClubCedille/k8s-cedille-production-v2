@@ -20,6 +20,8 @@ spec:
       name: 'cedille-pr-{{.number}}'
       annotations:
         argocd.argoproj.io/sync-wave: "2"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
       labels:
         app-type: "preview"
         preview-pr-number: "{{.number}}"
