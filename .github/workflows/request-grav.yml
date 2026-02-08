@@ -14,6 +14,10 @@ on:
                 type: string
                 required: false
                 description: Contexte sur la demande
+            skeleton_url:
+                type: string
+                required: false
+                description: URL du squelette Grav (laisser vide pour le package de base). Voir https://getgrav.org/downloads/skeletons
 
 jobs:
     create_pr:
@@ -91,6 +95,7 @@ jobs:
                     Nom du club: ${{inputs.nom_club}}
                     Domaine: ${{inputs.domaine}}
                     Contexte: ${{inputs.contexte}}
+                    Squelette: ${{inputs.skeleton_url || 'Base Grav Admin (défaut)'}}
                     Mot de passe par defaut:
                     > `kubectl port-forward -n vault svc/vault-ui 8200`
                     > https://localhost:8200/ui/vault/secrets/kv/show/${{inputs.nom_club}}-grav/default/grav/${{inputs.nom_club}}-grav-init-pwd
