@@ -8,6 +8,7 @@ metadata:
     kube-score/ignore: container-image-tag,container-security-context-readonlyrootfilesystem, container-security-context-user-group-id, pod-networkpolicy
 spec:
   replicas: 1
+  minReadySeconds: 30
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -33,11 +34,16 @@ spec:
                 name: grav-config
           ports:
             - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
             - name: grav-accounts
