@@ -10,10 +10,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - veloom.etsmtl.ca
+        - evovelo.etsmtl.ca
       secretName: veloom-prod-tls
   rules:
-    - host: veloom.etsmtl.ca
+    - host: evovelo.etsmtl.ca
       http:
         paths:
           - pathType: Prefix

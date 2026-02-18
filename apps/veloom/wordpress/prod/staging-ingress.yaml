@@ -10,10 +10,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - veloom.prodv2.cedille.club
+        - evovelo.prodv2.cedille.club
       secretName: veloom-staging-tls
   rules:
-    - host: veloom.prodv2.cedille.club
+    - host: evovelo.prodv2.cedille.club
       http:
         paths:
           - pathType: Prefix
