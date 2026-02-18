@@ -54,6 +54,9 @@ spec:
           configMap:
             defaultMode: 420
             name: wp-php-config
+      securityContext:
+        fsGroup: 33
+        runAsUser: 33
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
