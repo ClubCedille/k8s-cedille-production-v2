@@ -18,6 +18,13 @@ spec:
         app: veloom
         tier: frontend
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 33:33 /var/www/html && chmod -R 755 /var/www/html"]
+          volumeMounts:
+            - name: veloom-wordpress-persistent-storage
+              mountPath: /var/www/html
       containers:
         - image: wordpress:6.8.3-php8.1-apache
           name: veloom-wordpress
