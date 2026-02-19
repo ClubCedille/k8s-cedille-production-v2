@@ -21,6 +21,11 @@ spec:
       containers:
         - image: wordpress:6.8.3-php8.1-apache
           name: veloom-wordpress
+          env:
+            - name: WORDPRESS_HOME_URL
+              value: "http://localhost:8081"
+            - name: WORDPRESS_SITE_URL
+              value: "http://localhost:8081"
           envFrom:
             - secretRef:
                 name: veloom-secret
