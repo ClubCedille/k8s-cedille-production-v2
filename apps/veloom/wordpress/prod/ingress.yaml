@@ -6,6 +6,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-http
     ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/tls-acme: "true"
+    projectcontour.io/response-timeout: "120s"
 spec:
   ingressClassName: contour
   tls:
