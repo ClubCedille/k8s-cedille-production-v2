@@ -23,9 +23,9 @@ spec:
           name: veloom-wordpress
           env:
             - name: WORDPRESS_HOME_URL
-              value: "http://localhost:8081"
+              value: "http://evovelo.etsmtl.ca"
             - name: WORDPRESS_SITE_URL
-              value: "http://localhost:8081"
+              value: "http://evovelo.etsmtl.ca"
           envFrom:
             - secretRef:
                 name: veloom-secret
