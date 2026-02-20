@@ -1,5 +1,7 @@
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
+metadata:
+  name: evovelo
 spec:
   virtualhost:
     fqdn: evovelo.etsmtl.ca
@@ -11,11 +13,10 @@ spec:
       services:
         - name: veloom-svc
           port: 80
-      requestPolicy:
-        allow:
-          headers:
-            - Content-Type
-            - Authorization
+      requestHeadersPolicy:
+        set:
+          - name: X-Forwarded-Proto
+            value: https
       cors:
         allowOrigin:
           - "https://evovelo.etsmtl.ca"
