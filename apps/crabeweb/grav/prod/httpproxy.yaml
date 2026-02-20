@@ -6,7 +6,7 @@ spec:
   virtualhost:
     fqdn: crabe.demov2.prodv2.cedille.club
     tls:
-      secretName: grav-tls
+      secretName: grav-tls-prod
       minimumProtocolVersion: "1.3"
   routes:
     - conditions:
@@ -18,9 +18,9 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grav-tls
+  name: grav-tls-prod
 spec:
-  secretName: grav-tls
+  secretName: grav-tls-prod
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
