@@ -25,3 +25,16 @@ spec:
           - "*"
         allowHeaders:
           - "*"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: veloom-prod-tls
+spec:
+  secretName: veloom-prod-tls
+  issuerRef:
+    name: letsencrypt-http
+    kind: ClusterIssuer
+  commonName: evovelo.etsmtl.ca
+  dnsNames:
+    - evovelo.etsmtl.ca
