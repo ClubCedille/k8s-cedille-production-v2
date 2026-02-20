@@ -1,26 +1,26 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: veloom-prod-ingress
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-http
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/tls-acme: "true"
-    projectcontour.io/response-timeout: "120s"
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
 spec:
-  ingressClassName: contour
-  tls:
-    - hosts:
-        - evovelo.etsmtl.ca
+  virtualhost:
+    fqdn: evovelo.etsmtl.ca
+    tls:
       secretName: veloom-prod-tls
-  rules:
-    - host: evovelo.etsmtl.ca
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: veloom-svc
-                port:
-                  number: 80
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: veloom-svc
+          port: 80
+      requestPolicy:
+        allow:
+          headers:
+            - Content-Type
+            - Authorization
+      cors:
+        allowOrigin:
+          - "https://evovelo.etsmtl.ca"
+          - "https://evovelo.cedille.club"
+        allowMethods:
+          - "*"
+        allowHeaders:
+          - "*"
