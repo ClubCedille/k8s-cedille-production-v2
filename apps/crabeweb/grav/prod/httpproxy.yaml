@@ -12,7 +12,7 @@ spec:
     - conditions:
         - prefix: /
       services:
-        - name: grav
+        - name: crabeweb-grav
           port: 80
 ---
 apiVersion: cert-manager.io/v1
