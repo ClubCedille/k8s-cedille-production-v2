@@ -5,6 +5,7 @@ namePrefix: crabeweb-
 
 resources:
   - ../../../../bases/grav
+  - httpproxy.yaml
 
 patches:
   - path: vault-patch.yaml
