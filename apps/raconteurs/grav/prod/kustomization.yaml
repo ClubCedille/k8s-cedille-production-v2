@@ -9,17 +9,33 @@ resources:
 patches:
   - path: vault-patch.yaml
   - target:
-      kind: Ingress
+      kind: HTTPProxy
       name: grav-ingress
     patch: |-
       - op: replace
-        path: /spec/rules/0/host
+        path: /spec/virtualhost/fqdn
         value: raconteurs.etsmtl.ca
       - op: replace
-        path: /spec/tls/0/hosts/0
+        path: /spec/virtualhost/tls/secretName
+        value: raconteurs-grav-tls
+      - op: replace
+        path: /spec/routes/0/services/0/name
+        value: raconteurs-grav
+  - target:
+      kind: Certificate
+      name: grav-tls
+    patch: |-
+      - op: replace
+        path: /spec/secretName
+        value: raconteurs-grav-tls
+      - op: replace
+        path: /spec/commonName
         value: raconteurs.etsmtl.ca
       - op: replace
-        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+        path: /spec/dnsNames/0
+        value: raconteurs.etsmtl.ca
+      - op: replace
+        path: /spec/issuerRef/name
         value: letsencrypt-http
   - target:
       kind: RandomSecret

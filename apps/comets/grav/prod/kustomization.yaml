@@ -9,14 +9,30 @@ resources:
 patches:
   - path: vault-patch.yaml
   - target:
-      kind: Ingress
+      kind: HTTPProxy
       name: grav-ingress
     patch: |-
       - op: replace
-        path: /spec/rules/0/host
+        path: /spec/virtualhost/fqdn
         value: comets.etsmtl.ca
       - op: replace
-        path: /spec/tls/0/hosts/0
+        path: /spec/virtualhost/tls/secretName
+        value: comets-grav-tls
+      - op: replace
+        path: /spec/routes/0/services/0/name
+        value: comets-grav
+  - target:
+      kind: Certificate
+      name: grav-tls
+    patch: |-
+      - op: replace
+        path: /spec/secretName
+        value: comets-grav-tls
+      - op: replace
+        path: /spec/commonName
+        value: comets.etsmtl.ca
+      - op: replace
+        path: /spec/dnsNames/0
         value: comets.etsmtl.ca
   - target:
       kind: RandomSecret
