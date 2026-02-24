@@ -4,7 +4,7 @@ metadata:
   name: grav-httproxy-temp
 spec:
   virtualhost:
-    fqdn: crabe.demo.prodv2.cedille.club
+    fqdn: crabe.etsmtl.ca
     tls:
       secretName: grav-tls-temp
       minimumProtocolVersion: "1.3"
@@ -24,6 +24,6 @@ spec:
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
-  commonName: crabe.demo.prodv2.cedille.club
+  commonName: crabe.etsmtl.ca
   dnsNames:
-    - crabe.demo.prodv2.cedille.club
+    - crabe.etsmtl.ca
