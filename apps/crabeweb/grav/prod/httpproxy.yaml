@@ -22,7 +22,7 @@ metadata:
 spec:
   secretName: grav-tls-temp
   issuerRef:
-    name: letsencrypt-prod
+    name: letsencrypt-http
     kind: ClusterIssuer
   commonName: crabe.etsmtl.ca
   dnsNames:
