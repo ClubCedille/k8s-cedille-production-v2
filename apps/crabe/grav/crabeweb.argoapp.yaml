@@ -14,7 +14,7 @@ spec:
     namespace: crabeweb-grav
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/crabeweb/grav/prod
+    path: apps/crabe/grav/prod
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
