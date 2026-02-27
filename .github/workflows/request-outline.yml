@@ -84,6 +84,12 @@ jobs:
           strict: true
           variables: ${{ env.j2_vars }}
 
+      # Run Terraform Modules
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+        run: terraform init
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
