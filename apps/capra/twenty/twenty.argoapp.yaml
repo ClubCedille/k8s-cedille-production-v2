@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: plane
+  name: twenty
   namespace: argocd
 spec:
   project: default
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: plane
+    namespace: twenty
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/plane
+    path: apps/capra/twenty
     targetRevision: HEAD
   syncPolicy:
     syncOptions:

@@ -1,22 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: n8n
+  name: plane
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
+  project: default
   destination:
-    namespace: n8n
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-  project: k8s-cedille-production-v2
+    namespace: plane
   source:
-    path: apps/n8n/prod
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+    path: apps/capra/plane
     targetRevision: HEAD
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
       - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
