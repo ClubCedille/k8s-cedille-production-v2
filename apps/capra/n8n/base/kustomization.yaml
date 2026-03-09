@@ -6,7 +6,6 @@ metadata:
 resources:
   - postgres-configmap.yaml
   - postgres-deployment.yaml
-  - postgres-secret.yaml
   - postgres-service.yaml
   - n8n-service.yaml
   - n8n-deployment.yaml
