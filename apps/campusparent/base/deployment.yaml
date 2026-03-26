@@ -23,7 +23,7 @@ spec:
           emptyDir: {}
       containers:
         - name: campusparent
-          image: ghcr.io/campusparent-aufets/campusparent:1.0.2
+          image: ghcr.io/clubcedille/frontend-campusparentv2:latest
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
@@ -36,6 +36,8 @@ spec:
               mountPath: /var/cache/nginx
             - name: nginx-run
               mountPath: /run
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
           ports:
             - containerPort: 3000
           resources:
@@ -58,3 +60,11 @@ spec:
                 - ALL
             seccompProfile:
               type: RuntimeDefault
+      volumes:
+        - name: nginx-temp
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
+        - name: run-volume
+          emptyDir: {}
