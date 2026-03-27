@@ -15,12 +15,7 @@ spec:
         app: campusparent
     spec:
       imagePullSecrets:
-        - name: ghcr-campusparent-secret
-      volumes:
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}
+        - name: ghcr-clubcedille-secret
       containers:
         - name: campusparent
           image: ghcr.io/clubcedille/frontend-campusparentv2:latest
@@ -61,10 +56,10 @@ spec:
             seccompProfile:
               type: RuntimeDefault
       volumes:
-        - name: nginx-temp
+        - name: nginx-cache
           emptyDir: {}
         - name: config-volume
           configMap:
             name: nginx-config
-        - name: run-volume
+        - name: nginx-run
           emptyDir: {}
