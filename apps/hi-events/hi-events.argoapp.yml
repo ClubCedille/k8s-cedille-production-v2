@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hi-events
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+    targetRevision: HEAD
+    path: apps/hi-events
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hi-events
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
