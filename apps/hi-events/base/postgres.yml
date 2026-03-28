@@ -11,15 +11,22 @@ spec:
     matchLabels:
       app: hi-events-postgres
   strategy:
-    type: Recreate # Nécessaire avec un PVC ReadWriteOnce (d'après Claude)
+    type: Recreate
   template:
     metadata:
       labels:
         app: hi-events-postgres
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: postgres
           image: postgres:16-alpine
+          imagePullPolicy: Always
           ports:
             - containerPort: 5432
           env:
@@ -38,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: hi-events-secret
                   key: DB_PASSWORD
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
@@ -45,25 +57,21 @@ spec:
             requests:
               cpu: "100m"
               memory: "128Mi"
+              ephemeral-storage: "256Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - hi_events
-            initialDelaySeconds: 30
-            periodSeconds: 10
+              ephemeral-storage: "1Gi"
           readinessProbe:
             exec:
-              command:
-                - pg_isready
-                - -U
-                - hi_events
+              command: ["pg_isready", "-U", "hi_events"]
             initialDelaySeconds: 5
             periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
       volumes:
         - name: postgres-data
           persistentVolumeClaim:

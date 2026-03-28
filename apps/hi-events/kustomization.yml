@@ -10,4 +10,5 @@ resources:
   - base/redis.yml
   - base/hi-events-deployment.yml
   - base/hi-events-service.yml
+  - base/network-policies.yml
   - base/ingress.yml

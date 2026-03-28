@@ -29,12 +29,24 @@ spec:
       labels:
         app: hi-events-redis
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: redis
           image: redis:7-alpine
+          imagePullPolicy: Always
           ports:
             - containerPort: 6379
           command: ["redis-server", "--appendonly", "yes"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
           volumeMounts:
             - name: redis-data
               mountPath: /data
@@ -42,19 +54,21 @@ spec:
             requests:
               cpu: "50m"
               memory: "64Mi"
+              ephemeral-storage: "128Mi"
             limits:
               cpu: "200m"
               memory: "256Mi"
-          livenessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
-            initialDelaySeconds: 15
-            periodSeconds: 10
+              ephemeral-storage: "512Mi"
           readinessProbe:
             exec:
               command: ["redis-cli", "ping"]
             initialDelaySeconds: 5
             periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 15
+            periodSeconds: 10
       volumes:
         - name: redis-data
           persistentVolumeClaim:

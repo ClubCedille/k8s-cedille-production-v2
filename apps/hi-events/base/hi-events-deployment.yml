@@ -17,9 +17,13 @@ spec:
       labels:
         app: hi-events
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: hi-events
-          image: daveearley/hi.events-all-in-one:latest # TODO: épingler une version spécifique ex: v1.5.2
+          image: daveearley/hi.events-all-in-one:v1.7.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 8123
           envFrom:
@@ -27,13 +31,20 @@ spec:
                 name: hi-events-config
             - secretRef:
                 name: hi-events-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
           resources:
             requests:
               cpu: "250m"
               memory: "512Mi"
+              ephemeral-storage: "512Mi"
             limits:
               cpu: "1000m"
               memory: "1Gi"
+              ephemeral-storage: "2Gi"
           readinessProbe:
             httpGet:
               path: /api/health
@@ -42,8 +53,7 @@ spec:
             periodSeconds: 10
             failureThreshold: 5
           livenessProbe:
-            httpGet:
-              path: /api/health
+            tcpSocket:
               port: 8123
             initialDelaySeconds: 60
             periodSeconds: 20
