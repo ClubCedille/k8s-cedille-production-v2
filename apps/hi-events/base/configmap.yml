@@ -4,14 +4,12 @@ metadata:
   name: hi-events-config
   namespace: hi-events
 data:
-  VITE_FRONTEND_URL: "https://prodv2.cedille.club"
-  VITE_API_URL_CLIENT: "https://prodv2.cedille.club/api"
-  VITE_API_URL_SERVER: "http://localhost:8000/api"
-
-  APP_FRONTEND_URL: "https://prodv2.cedille.club"
-  APP_DISABLE_REGISTRATION: "false"   # Inscriptions publiques
+  # URLs runtime (les VITE_* sont baked au build dans l'image all-in-one, inutiles ici)
+  APP_FRONTEND_URL: "https://hi-events.prodv2.cedille.club"
+  APP_URL: "https://hi-events.prodv2.cedille.club"
+  APP_DISABLE_REGISTRATION: "false"
   LOG_CHANNEL: "stderr"
-  CORS_ALLOWED_ORIGINS: "https://prodv2.cedille.club"
+  CORS_ALLOWED_ORIGINS: "https://hi-events.prodv2.cedille.club"
 
   FILESYSTEM_PUBLIC_DISK: "public"
   FILESYSTEM_PRIVATE_DISK: "local"
@@ -28,7 +26,7 @@ data:
   QUEUE_CONNECTION: "redis"
 
   MAIL_MAILER: "smtp"
-  MAIL_HOST: "smtp.example.com"        # TODO: Remplacer par un serveur SMTP, plus pratique pour envoyer des courriels
+  MAIL_HOST: "smtp.example.com" # TODO: remplacer par le serveur SMTP dès qu'on en a un
   MAIL_PORT: "587"
   MAIL_FROM_ADDRESS: "noreply@cedille.club"
   MAIL_FROM_NAME: "Cedille Events"

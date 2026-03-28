@@ -11,7 +11,7 @@ spec:
     matchLabels:
       app: hi-events-postgres
   strategy:
-    type: Recreate   # Nécessaire avec un PVC ReadWriteOnce (d'après Claude)
+    type: Recreate # Nécessaire avec un PVC ReadWriteOnce (d'après Claude)
   template:
     metadata:
       labels:

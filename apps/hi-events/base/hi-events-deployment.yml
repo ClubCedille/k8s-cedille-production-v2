@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hi-events
+  namespace: hi-events
+  labels:
+    app: hi-events
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hi-events
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: hi-events
+    spec:
+      containers:
+        - name: hi-events
+          image: daveearley/hi.events-all-in-one:latest # TODO: épingler une version spécifique ex: v1.5.2
+          ports:
+            - containerPort: 8123
+          envFrom:
+            - configMapRef:
+                name: hi-events-config
+            - secretRef:
+                name: hi-events-secret
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8123
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8123
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
