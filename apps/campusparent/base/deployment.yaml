@@ -15,15 +15,10 @@ spec:
         app: campusparent
     spec:
       imagePullSecrets:
-        - name: ghcr-campusparent-secret
-      volumes:
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}
+        - name: ghcr-clubcedille-secret
       containers:
         - name: campusparent
-          image: ghcr.io/campusparent-aufets/campusparent:1.0.2
+          image: ghcr.io/clubcedille/frontend-campusparentv2:latest
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
@@ -36,8 +31,10 @@ spec:
               mountPath: /var/cache/nginx
             - name: nginx-run
               mountPath: /run
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
           ports:
-            - containerPort: 3000
+            - containerPort: 80
           resources:
             requests:
               cpu: 100m
@@ -49,12 +46,17 @@ spec:
               ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 10001
             runAsGroup: 10001
-            capabilities:
-              drop:
-                - ALL
             seccompProfile:
               type: RuntimeDefault
+      volumes:
+        - name: nginx-cache
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: nginx-config
+        - name: nginx-run
+          emptyDir: {}
