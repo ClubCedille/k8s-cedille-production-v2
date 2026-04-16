@@ -11,9 +11,9 @@ spec:
   tls:
     - secretName: planifets-applets-tls
       hosts:
-        - planifets.clubapplets.com
+        - planifets.clubapplets.ca
   rules:
-    - host: planifets.clubapplets.com
+    - host: planifets.clubapplets.ca
       http:
         paths:
           - pathType: Prefix
