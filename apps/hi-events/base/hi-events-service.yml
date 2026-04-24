@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hi-events
+  namespace: hi-events
+spec:
+  selector:
+    app: hi-events
+  ports:
+    - name: http
+      port: 8123
+      targetPort: 8123

@@ -1,0 +1,18 @@
+# TODO: Confirmer si le cluster utilise traefik.io/v1alpha1 (Traefik v3)
+# ou traefik.containo.us/v1alpha1 (Traefik v2) et le nom du certResolver
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hi-events
+  namespace: hi-events
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`hi-events.prodv2.cedille.club`)
+      kind: Rule
+      services:
+        - name: hi-events
+          port: 8123
+  tls:
+    certResolver: letsencrypt # TODO: confirmer le nom du certResolver

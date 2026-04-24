@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hi-events
+  namespace: hi-events
+  labels:
+    app: hi-events
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hi-events
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: hi-events
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: hi-events
+          image: daveearley/hi.events-all-in-one:v1.7.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8123
+          envFrom:
+            - configMapRef:
+                name: hi-events-config
+            - secretRef:
+                name: hi-events-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+              ephemeral-storage: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+              ephemeral-storage: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8123
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8123
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
