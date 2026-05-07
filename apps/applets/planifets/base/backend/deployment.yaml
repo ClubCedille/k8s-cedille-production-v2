@@ -35,6 +35,8 @@ spec:
               value: production
             - name: PORT
               value: "3000"
+            - name: TZ
+              value: America/Toronto
             - name: FRONTEND_URL
               value: https://planifets.prodv2.cedille.club
             # PostgreSQL Configuration
@@ -44,7 +46,7 @@ spec:
                   name: planifets-secret
                   key: db_url
             - name: LOG_LEVELS
-              value: "log,error,warn,debug,verbose"
+              value: "log,error,warn"
             - name: YARN_CACHE_FOLDER
               value: /tmp/.yarn-cache
           livenessProbe:
