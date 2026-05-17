@@ -43,6 +43,14 @@ spec:
                 secretKeyRef:
                   name: planifets-secret
                   key: db_url
+            # Analytics
+            - name: POSTHOG_HOST
+              value: https://us.i.posthog.com
+            - name: POSTHOG_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: planifets-secret
+                  key: posthog_api_key
             - name: LOG_LEVELS
               value: "log,error,warn"
             - name: YARN_CACHE_FOLDER
