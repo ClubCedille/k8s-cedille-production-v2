@@ -5,3 +5,4 @@ resources:
   - ../base/frontend
   - ../base/backend
   - ingress.yaml
+  - vault-secret.yaml

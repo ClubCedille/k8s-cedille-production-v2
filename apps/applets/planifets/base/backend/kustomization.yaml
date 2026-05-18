@@ -5,4 +5,3 @@ resources:
   - deployment.yaml
   - service.yaml
   - cnpg.yaml
-  - vault-secret.yaml
