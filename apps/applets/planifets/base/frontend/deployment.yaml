@@ -31,8 +31,6 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: NEXT_PUBLIC_API_BASE_URL
-              value: https://planifets.prodv2.cedille.club/api
             - name: APP_ENV
               value: production
             - name: CI
@@ -42,20 +40,6 @@ spec:
               value: https://cloud.umami.is/script.js
             - name: UMAMI_API_URL
               value: https://cloud.umami.is/api/send
-            - name: NEXT_PUBLIC_POSTHOG_HOST
-              value: https://us.i.posthog.com
-            - name: NEXT_PUBLIC_POSTHOG_UI_HOST
-              value: https://us.posthog.com
-            - name: NEXT_PUBLIC_UMAMI_WEBSITE_ID
-              valueFrom:
-                secretKeyRef:
-                  name: planifets-frontend-secret
-                  key: umami_website_id
-            - name: NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: planifets-frontend-secret
-                  key: posthog_project_token
           livenessProbe:
             tcpSocket:
               port: 3000
