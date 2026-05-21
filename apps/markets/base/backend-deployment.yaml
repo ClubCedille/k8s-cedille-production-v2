@@ -23,6 +23,13 @@ spec:
           envFrom:
             - secretRef:
                 name: markets-env-secret
+          env:
+            - name: GITHUB_BUG_REPORT_LABELS
+              valueFrom:
+                configMapKeyRef:
+                  name: markets-configmap
+                  key: GITHUB_BUG_REPORT_LABELS
+
           # volumeMounts:
           #   - name: logs-temp
           #     mountPath: /app/markets/logs

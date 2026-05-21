@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../base
   - ingress.yaml
+  - configMap.yaml
 
 patchesStrategicMerge:
   - patch-backend-image.yaml
