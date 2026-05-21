@@ -5,3 +5,4 @@ resources:
   - ../base
   - ingress.yaml
   - ingress-algoets.yaml
+  - configMap.yaml
