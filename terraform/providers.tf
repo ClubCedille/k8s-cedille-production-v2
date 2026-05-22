@@ -6,6 +6,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 5.0"
     }
+    vault = {
+      source  = "hashicorp/vault"
+      version = "~> 4.0"
+    }
   }
 
   cloud {
@@ -24,4 +28,9 @@ provider "github" {
     installation_id = var.gh_install_id # or `GITHUB_APP_INSTALLATION_ID`
     pem_file        = var.gh_pem        # or `GITHUB_APP_PEM_FILE`
   }
+}
+
+provider "vault" {
+  address = var.vault_address
+  token   = var.vault_token
 }
