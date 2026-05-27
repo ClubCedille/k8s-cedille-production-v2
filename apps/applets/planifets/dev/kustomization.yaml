@@ -7,5 +7,5 @@ resources:
   - ingress.yaml
   - vault-secret.yaml
 
-patchesStrategicMerge:
-  - patch-replicas.yaml
+patches:
+  - path: patch-replicas.yaml
