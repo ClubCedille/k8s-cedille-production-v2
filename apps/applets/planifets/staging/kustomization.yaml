@@ -6,4 +6,3 @@ resources:
   - ../base/backend
   - ingress.yaml
   - vault-secret.yaml
-  - cnpg.yaml
