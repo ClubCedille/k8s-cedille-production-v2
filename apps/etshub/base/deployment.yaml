@@ -14,8 +14,14 @@ spec:
       labels:
         app: etshub
     spec:
+      securityContext:
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
       imagePullSecrets:
         - name: ghcr-clubcedille-secret
+      volumes:
+        - name: tmp
+          emptyDir: {}
       containers:
         - name: etshub
           image: ghcr.io/clubcedille/etshub:latest
@@ -36,11 +42,14 @@ spec:
             timeoutSeconds: 5
           livenessProbe:
             httpGet:
-              path: /
+              path: /manifest.webmanifest
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           ports:
             - containerPort: 3000
           resources:
@@ -54,10 +63,10 @@ spec:
               ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             runAsNonRoot: true
-            runAsUser: 1001
-            runAsGroup: 1001
+            runAsUser: 10001
+            runAsGroup: 10001
             capabilities:
               drop:
                 - ALL
