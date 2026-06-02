@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: saveursdegenie-web
-          image: clubcedille/saveursdegenie.etsmtl.ca
+          image: clubcedille/saveursdegenie.etsmtl.ca:latest
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
