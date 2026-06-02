@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: etshub
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: etshub=ghcr.io/clubcedille/etshub:latest
+    argocd-image-updater.argoproj.io/etshub.update-strategy: digest
+    argocd-image-updater.argoproj.io/etshub.pull-secret: pullsecret:argocd/ghcr-clubcedille-secret
+spec:
+  project: k8s-cedille-production-v2
+  destination:
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+    namespace: etshub
+  source:
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+    path: apps/etshub/prod
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
