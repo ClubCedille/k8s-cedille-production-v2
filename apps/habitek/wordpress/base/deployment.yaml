@@ -26,6 +26,14 @@ spec:
                 name: habitek-secret
           ports:
             - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          livenessProbe:
+            httpGet:
+              path: /wp-json/vigilant/v1/health
+              port: 80
           volumeMounts:
             - name: habitek-wordpress-persistent-storage
               mountPath: /var/www/html
