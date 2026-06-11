@@ -62,7 +62,7 @@ spec:
     - metadata:
         name: qdrant-storage
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteMany"] # for future growth and scaling
         storageClassName: cephfs
         resources:
           requests:
