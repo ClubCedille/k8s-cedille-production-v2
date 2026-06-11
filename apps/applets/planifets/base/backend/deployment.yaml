@@ -56,14 +56,17 @@ spec:
             - name: YARN_CACHE_FOLDER
               value: /tmp/.yarn-cache
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/health/live
               port: 3000
+              scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /api/health/ready
               port: 3000
+              scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
