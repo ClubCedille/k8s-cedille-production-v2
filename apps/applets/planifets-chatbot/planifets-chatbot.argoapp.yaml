@@ -6,10 +6,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  project: k8s-cedille-production-v2
+  project: applets
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: planifets-chatbot
+    namespace: planifets
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     path: apps/applets/planifets-chatbot/prod
@@ -27,10 +27,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  project: k8s-cedille-production-v2
+  project: applets
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: planifets-chatbot-staging
+    namespace: planifets-staging
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     path: apps/applets/planifets-chatbot/staging
@@ -51,7 +51,7 @@ spec:
   project: k8s-cedille-production-v2
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
-    namespace: planifets-chatbot-dev
+    namespace: planifets-dev
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
     path: apps/applets/planifets-chatbot/dev
