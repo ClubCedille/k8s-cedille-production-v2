@@ -1,158 +1,75 @@
 # planifets-chatbot
 
-Chatbot déployé sur le cluster k8s-cedille-production-v2 via ArgoCD (GitOps).
+Applet GitOps pour le composant `planifets-chatbot` déployé sur le cluster `k8s-cedille-production-v2` via ArgoCD.
 
-## Architecture
+Ce dossier ne contient plus une stack frontend/backend complète : il gère uniquement le service **Qdrant** utilisé par le chatbot, avec les secrets associés par environnement.
 
-| Service    | Image                                      | Port |
-|------------|--------------------------------------------|------|
-| Frontend   | `ghcr.io/applets/planifets-frontend`       | 3000 |
-| Backend    | `ghcr.io/applets/planifets-backend`        | 3000 |
-| PostgreSQL | CloudNative-PG (CNPG) 17.2                 | 5432 |
-| Qdrant     | `qdrant/qdrant`                            | 6333 |
+## Ce qui est déployé
+
+| Composant | Image | Port | Rôle |
+|-----------|-------|------|------|
+| Qdrant | `qdrant/qdrant:latest` | `6333` / `6334` | Base vectorielle du chatbot |
 
 ## Environnements
 
-| Env      | Namespace                   | Domaine                                    | Tag image  |
-|----------|-----------------------------|--------------------------------------------|------------|
-| dev      | `planifets-chatbot-dev`     | `planifets-chatbot.dev.cedille.club`       | `:dev`     |
-| staging  | `planifets-chatbot-staging` | `planifets-chatbot.staging.cedille.club`   | `:staging` |
-| prod     | `planifets-chatbot`         | `planifets-chatbot.prodv2.cedille.club`    | `:latest`  |
+| Env | Namespace | ArgoCD Application | Secret Vault |
+|-----|-----------|--------------------|--------------|
+| dev | `planifets-chatbot-dev` | `planifets-chatbot-dev` | `kv/data/planifets-chatbot/dev/planifets-chatbot/qdrant` |
+| staging | `planifets-chatbot-staging` | `planifets-chatbot-staging` | `kv/data/planifets-chatbot/staging/planifets-chatbot/qdrant` |
+| prod | `planifets-chatbot` | `planifets-chatbot` | `kv/data/planifets-chatbot/default/planifets-chatbot/qdrant` |
 
-## Structure Kustomize
+## Structure actuelle
 
-```
+```text
 apps/applets/planifets-chatbot/
-├── planifets-chatbot.argoapp.yaml   # 3 ArgoCD Applications (dev/staging/prod)
+├── planifets-chatbot.argoapp.yaml   # 3 Applications ArgoCD : dev, staging, prod
 ├── base/
-│   ├── frontend/                    # Deployment + Service frontend
-│   ├── backend/                     # Deployment + Service backend + CNPG cluster + Pooler
-│   └── qdrant/                      # StatefulSet + Service Qdrant
-├── dev/                             # Overlay: ingress dev, vault secrets dev, patch image :dev
-├── staging/                         # Overlay: ingress staging, vault secrets staging, patch image :staging
-└── prod/                            # Overlay: ingress prod (2 domaines), vault secrets prod
+│   └── qdrant/
+│       ├── service.yaml             # Service ClusterIP (6333/6334)
+│       └── statefulset.yaml         # StatefulSet Qdrant + PVC
+├── dev/
+│   ├── kustomization.yaml           # Base qdrant + secret Vault dev
+│   └── vault-secret.yaml
+├── staging/
+│   ├── kustomization.yaml           # Base qdrant + secret Vault staging
+│   └── vault-secret.yaml
+└── prod/
+    ├── kustomization.yaml           # Base qdrant + secret Vault prod
+    └── vault-secret.yaml
 ```
 
-## Gestion des secrets (Vault)
+## Secrets Vault
 
-Les secrets sont gérés via **HashiCorp Vault** + l'opérateur `vault-secret`. ArgoCD sync les `VaultSecret` qui créent automatiquement les Kubernetes Secrets dans le namespace.
+Les secrets sont gérés via **HashiCorp Vault** et l'opérateur `vault-secret`.
 
-### Chemins Vault à configurer
+Chaque environnement crée un secret Kubernetes `planifets-chatbot-secret` contenant la clé `qdrant_api_key`, lue par le StatefulSet via `QDRANT__SERVICE__API_KEY`.
 
-#### dev (`planifets-chatbot-dev`)
+### Chemins Vault attendus
 
-```
-kv/data/planifets-chatbot/dev/planifets-chatbot/planifets-chatbot-backend
-  db_url          = postgresql://planifets_chatbot:<password>@planifets-chatbot-pooler-rw:5432/planifets_chatbot
-  qdrant_api_key  = <clé API Qdrant>
+- `dev` → `kv/data/planifets-chatbot/dev/planifets-chatbot/qdrant`
+- `staging` → `kv/data/planifets-chatbot/staging/planifets-chatbot/qdrant`
+- `prod` → `kv/data/planifets-chatbot/default/planifets-chatbot/qdrant`
 
-kv/data/planifets-chatbot/dev/planifets-chatbot/cnpg
-  username        = planifets_chatbot
-  password        = <mot de passe DB>
-```
+## Déploiement
 
-#### staging (`planifets-chatbot-staging`)
+1. Créer ou mettre à jour la valeur `api_key` dans le chemin Vault de l'environnement visé.
+2. Laisser ArgoCD synchroniser l'application correspondante.
+3. Vérifier que le secret `planifets-chatbot-secret` et le StatefulSet Qdrant sont bien présents dans le namespace.
 
-```
-kv/data/planifets-chatbot/staging/planifets-chatbot/planifets-chatbot-backend
-  db_url          = postgresql://planifets_chatbot:<password>@planifets-chatbot-pooler-rw:5432/planifets_chatbot
-  qdrant_api_key  = <clé API Qdrant>
-
-kv/data/planifets-chatbot/staging/planifets-chatbot/cnpg
-  username        = planifets_chatbot
-  password        = <mot de passe DB>
-```
-
-#### prod (`planifets-chatbot`)
-
-```
-kv/data/planifets-chatbot/default/planifets-chatbot/planifets-chatbot-backend
-  db_url          = postgresql://planifets_chatbot:<password>@planifets-chatbot-pooler-rw:5432/planifets_chatbot
-  qdrant_api_key  = <clé API Qdrant>
-
-kv/data/planifets-chatbot/default/planifets-chatbot/cnpg
-  username        = planifets_chatbot
-  password        = <mot de passe DB>
-```
-
-> **Important :** La clé `qdrant_api_key` doit être identique dans le secret backend et configurée sur le StatefulSet Qdrant (`QDRANT__SERVICE__API_KEY`). Le même secret `planifets-chatbot-secret` est monté dans les deux pods.
-
-### Rôle Vault requis
-
-Le rôle `secret-reader` doit être configuré dans Vault pour le service account `default` de chaque namespace. Voir [`apps/vault-gh-roles/`](../../vault-gh-roles/) pour le pattern.
-
-## Procédure de déploiement
-
-### Prérequis
-
-- Accès au cluster (via `kubectl` / Omni)
-- Accès à Vault pour créer les secrets
-- Images Docker publiées sur GHCR avec les bons tags (`:dev`, `:staging`, `:latest`)
-
-### 1. Configurer les secrets Vault
-
-Créer les chemins Vault listés ci-dessus pour l'environnement cible. Exemple avec la CLI Vault :
+### Vérifications utiles
 
 ```bash
-vault kv put kv/planifets-chatbot/dev/planifets-chatbot/cnpg \
-  username=planifets_chatbot \
-  password=<mot_de_passe_sécurisé>
-
-vault kv put kv/planifets-chatbot/dev/planifets-chatbot/planifets-chatbot-backend \
-  db_url="postgresql://planifets_chatbot:<password>@planifets-chatbot-pooler-rw:5432/planifets_chatbot" \
-  qdrant_api_key=<clé_api_aléatoire>
-```
-
-### 2. Pousser les modifications GitOps
-
-ArgoCD détecte automatiquement les changements sur la branche `HEAD`. Le simple merge d'un PR suffit pour déclencher un déploiement :
-
-```bash
-git add apps/applets/planifets-chatbot/
-git commit -m "feat: add planifets-chatbot deployment"
-git push origin main
-```
-
-ArgoCD synchronisera les 3 apps (`planifets-chatbot-dev`, `planifets-chatbot-staging`, `planifets-chatbot`) en vague 2 (`sync-wave: "2"`).
-
-### 3. Vérifier le déploiement
-
-```bash
-# Vérifier les pods (remplacer le namespace selon l'environnement)
 kubectl get pods -n planifets-chatbot-dev
 kubectl get pods -n planifets-chatbot-staging
 kubectl get pods -n planifets-chatbot
 
-# Vérifier les secrets créés par vault-secret
-kubectl get secrets -n planifets-chatbot-dev
-
-# Vérifier le cluster CNPG
-kubectl get cluster -n planifets-chatbot-dev
-
-# Vérifier Qdrant
-kubectl get statefulset -n planifets-chatbot-dev
+kubectl get secret -n planifets-chatbot-dev planifets-chatbot-secret
+kubectl get statefulset -n planifets-chatbot-dev planifets-chatbot-qdrant
+kubectl get svc -n planifets-chatbot-dev planifets-chatbot-qdrant
 ```
 
-### 4. Mise à jour des images (CI/CD)
+## Notes
 
-`argocd-image-updater` surveille GHCR et met à jour automatiquement les digests :
-
-- Push sur la branche `dev` → tag `:dev` → namespace `planifets-chatbot-dev`
-- Push sur la branche `staging` → tag `:staging` → namespace `planifets-chatbot-staging`
-- Release (tag `:latest`) → namespace `planifets-chatbot`
-
-## Dépannage
-
-```bash
-# Logs backend
-kubectl logs -n planifets-chatbot-dev deploy/planifets-chatbot-backend
-
-# Logs frontend
-kubectl logs -n planifets-chatbot-dev deploy/planifets-chatbot-frontend
-
-# Logs Qdrant
-kubectl logs -n planifets-chatbot-dev statefulset/planifets-chatbot-qdrant
-
-# Statut ArgoCD
-argocd app get planifets-chatbot-dev
-```
+- Le stockage persistant Qdrant utilise un `volumeClaimTemplate` de `5Gi` avec `storageClassName: cephfs`.
+- Le service expose les ports `6333` (HTTP) et `6334` (gRPC).
+- Les trois overlays (`dev`, `staging`, `prod`) réutilisent la base `qdrant` et ne diffèrent que par leur secret Vault.

@@ -26,19 +26,3 @@ variable "vault_token" {
   sensitive   = true
   description = "Vault token with write access to kv/ and sys/policy/ and auth/kubernetes/role/"
 }
-
-# planifets-chatbot secrets
-variable "chatbot_dev_qdrant_api_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "chatbot_staging_qdrant_api_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "chatbot_prod_qdrant_api_key" {
-  type      = string
-  sensitive = true
-}
