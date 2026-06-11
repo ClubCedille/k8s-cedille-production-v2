@@ -34,6 +34,10 @@ spec:
             httpGet:
               path: /
               port: 80
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
           volumeMounts:
             - name: habitek-wordpress-persistent-storage
               mountPath: /var/www/html
@@ -42,10 +46,10 @@ spec:
               subPath: uploads.ini
           resources:
             requests:
-              cpu: 4
+              cpu: 2
               memory: 1024Mi
             limits:
-              cpu: 6
+              cpu: 3
               memory: 2048Mi
       volumes:
         - name: habitek-wordpress-persistent-storage
