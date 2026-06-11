@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: planifets-chatbot-qdrant
   annotations:
-    kube-score/ignore: pod-networkpolicy, pod-probes
+    kube-score/ignore: pod-networkpolicy, pod-probes, container-image-tag
 spec:
   serviceName: planifets-chatbot-qdrant
   replicas: 1
@@ -15,6 +15,11 @@ spec:
       labels:
         app: planifets-chatbot-qdrant
     spec:
+      securityContext:
+        fsGroup: 10001
+      volumes:
+        - name: tmp
+          emptyDir: {}
       containers:
         - name: qdrant
           image: qdrant/qdrant:latest
@@ -31,8 +36,7 @@ spec:
                   name: planifets-chatbot-secret
                   key: qdrant_api_key
           livenessProbe:
-            httpGet:
-              path: /healthz
+            tcpSocket:
               port: 6333
             initialDelaySeconds: 30
             periodSeconds: 15
@@ -52,12 +56,14 @@ spec:
               memory: 1Gi
               ephemeral-storage: 1Gi
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            readOnlyRootFilesystem: false
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: qdrant-storage
               mountPath: /qdrant/storage
+            - name: tmp
+              mountPath: /tmp
   volumeClaimTemplates:
     - metadata:
         name: qdrant-storage

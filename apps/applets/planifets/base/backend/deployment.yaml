@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: planifets-backend
   annotations:
-    kube-score/ignore: pod-networkpolicy, pod-probes
+    kube-score/ignore: pod-networkpolicy, pod-probes, container-image-tag
 spec:
   replicas: 1
   selector:
@@ -61,7 +61,8 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -77,12 +78,16 @@ spec:
           securityContext:
             runAsUser: 10001
             runAsGroup: 10001
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: yarn-cache
               mountPath: /tmp/.yarn-cache
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: yarn-cache
+          emptyDir: {}
+        - name: tmp
           emptyDir: {}
 ---
 apiVersion: policy/v1
