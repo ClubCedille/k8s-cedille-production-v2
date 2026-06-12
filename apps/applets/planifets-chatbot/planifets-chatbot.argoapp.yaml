@@ -1,21 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: planifets
+  name: planifets-chatbot
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:latest, backend=ghcr.io/applets/planifets-backend:latest
-    argocd-image-updater.argoproj.io/website.update-strategy: digest
-    argocd-image-updater.argoproj.io/backend.update-strategy: digest
 spec:
-  project: k8s-cedille-production-v2
+  project: applets
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: planifets
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/applets/planifets/prod
+    path: apps/applets/planifets-chatbot/prod
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
@@ -25,13 +22,10 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: planifets-staging
+  name: planifets-chatbot-staging
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:staging, backend=ghcr.io/applets/planifets-backend:staging
-    argocd-image-updater.argoproj.io/website.update-strategy: digest
-    argocd-image-updater.argoproj.io/backend.update-strategy: digest
 spec:
   project: applets
   destination:
@@ -39,7 +33,7 @@ spec:
     namespace: planifets-staging
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/applets/planifets/staging
+    path: apps/applets/planifets-chatbot/staging
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
@@ -49,21 +43,18 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: planifets-dev
+  name: planifets-chatbot-dev
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:dev, backend=ghcr.io/applets/planifets-backend:dev
-    argocd-image-updater.argoproj.io/website.update-strategy: digest
-    argocd-image-updater.argoproj.io/backend.update-strategy: digest
 spec:
-  project: applets
+  project: k8s-cedille-production-v2
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: planifets-dev
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/applets/planifets/dev
+    path: apps/applets/planifets-chatbot/dev
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
