@@ -55,6 +55,10 @@ spec:
               value: "log,error,warn"
             - name: YARN_CACHE_FOLDER
               value: /tmp/.yarn-cache
+            - name: TRANSFORMERS_CACHE_DIR
+              value: /transformers-cache
+            - name: EMBEDDING_ORT_THREADS
+              value: "2"
           livenessProbe:
             httpGet:
               path: /api/health/live
@@ -72,11 +76,11 @@ spec:
           resources:
             requests:
               cpu: 800m
-              memory: 500Mi
+              memory: 700Mi
               ephemeral-storage: 256Mi
             limits:
-              cpu: 1500m
-              memory: 750Mi
+              cpu: 2000m
+              memory: 1Gi
               ephemeral-storage: 1Gi
           securityContext:
             runAsUser: 10001
@@ -87,11 +91,16 @@ spec:
               mountPath: /tmp/.yarn-cache
             - name: tmp
               mountPath: /tmp
+            - name: transformers-cache
+              mountPath: /transformers-cache
       volumes:
         - name: yarn-cache
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+        - name: transformers-cache
+          persistentVolumeClaim:
+            claimName: planifets-backend-transformers-cache
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
