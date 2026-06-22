@@ -40,14 +40,14 @@ spec:
               value: https://cloud.umami.is/script.js
             - name: UMAMI_API_URL
               value: https://cloud.umami.is/api/send
-          livenessProbe:
+          readinessProbe:
             tcpSocket:
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
-          readinessProbe:
+          livenessProbe:
             httpGet:
-              path: /health
+              path: /
               port: 3000
               scheme: HTTP
             initialDelaySeconds: 5

@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: n8n
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-etsmtl"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: contour
   tls:
