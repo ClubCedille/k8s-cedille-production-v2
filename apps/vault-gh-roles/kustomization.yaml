@@ -4,8 +4,5 @@ kind: Kustomization
 namespace: vault
 
 resources:
-  - acets-grav.yaml
-  - aeroets-grav.yaml
-  - comets-grav.yaml
   - crabeweb-grav.yaml
   - raconteurs-grav.yaml

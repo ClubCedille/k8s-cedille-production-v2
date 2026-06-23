@@ -9,7 +9,7 @@ metadata:
     argocd-image-updater.argoproj.io/website.update-strategy: digest
     argocd-image-updater.argoproj.io/backend.update-strategy: digest
 spec:
-  project: k8s-cedille-production-v2
+  project: applets
   destination:
     server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
     namespace: planifets
@@ -23,3 +23,51 @@ spec:
     automated:
       selfHeal: true
       prune: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: planifets-staging
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:staging, backend=ghcr.io/applets/planifets-backend:staging
+    argocd-image-updater.argoproj.io/website.update-strategy: digest
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
+spec:
+  project: applets
+  destination:
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+    namespace: planifets-staging
+  source:
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+    path: apps/applets/planifets/staging
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: planifets-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd-image-updater.argoproj.io/image-list: website=ghcr.io/applets/planifets-frontend:dev, backend=ghcr.io/applets/planifets-backend:dev
+    argocd-image-updater.argoproj.io/website.update-strategy: digest
+    argocd-image-updater.argoproj.io/backend.update-strategy: digest
+spec:
+  project: applets
+  destination:
+    server: https://cedille.kubernetes.omni.siderolabs.io?cluster=k8s-cedille-production-v2
+    namespace: planifets-dev
+  source:
+    repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
+    path: apps/applets/planifets/dev
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true

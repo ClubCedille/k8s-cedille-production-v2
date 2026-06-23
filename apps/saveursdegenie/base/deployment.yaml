@@ -14,9 +14,11 @@ spec:
       labels:
         app: saveursdegenie-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-clubcedille-secret
       containers:
         - name: saveursdegenie-web
-          image: clubcedille/saveursdegenie.etsmtl.ca
+          image: ghcr.io/clubcedille/saveursdegenie.etsmtl.ca:latest
           imagePullPolicy: Always
           readinessProbe:
             httpGet:

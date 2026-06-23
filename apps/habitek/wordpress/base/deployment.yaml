@@ -19,13 +19,25 @@ spec:
         tier: frontend
     spec:
       containers:
-        - image: wordpress:6.8.3-php8.1-apache
+        - image: wordpress:6.9.4-php8.2-apache
           name: habitek-wordpress
           envFrom:
             - secretRef:
                 name: habitek-secret
           ports:
             - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
           volumeMounts:
             - name: habitek-wordpress-persistent-storage
               mountPath: /var/www/html
@@ -34,10 +46,10 @@ spec:
               subPath: uploads.ini
           resources:
             requests:
-              cpu: 4
+              cpu: 2
               memory: 1024Mi
             limits:
-              cpu: 6
+              cpu: 3
               memory: 2048Mi
       volumes:
         - name: habitek-wordpress-persistent-storage
