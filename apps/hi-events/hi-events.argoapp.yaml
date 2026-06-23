@@ -10,7 +10,7 @@ spec:
     namespace: hi-events
   source:
     repoURL: https://github.com/ClubCedille/k8s-cedille-production-v2
-    path: apps/cedille/hi-events
+    path: apps/hi-events
     targetRevision: HEAD
   syncPolicy:
     syncOptions:
