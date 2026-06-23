@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hi-events
+  name: hi-events
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: hi-events
+  template:
+    metadata:
+      labels:
+        app: hi-events
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: hi-events
+          image: daveearley/hi.events-all-in-one:v1.7.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8123
+              name: http
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: hi-events-config
+          env:
+            # DB credentials from the CNPG-generated secret (cnpg-secret)
+            - name: DB_HOST
+              value: "cnpg-rw"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: "hi_events"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: cnpg-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cnpg-secret
+                  key: password
+            # App secrets from Vault (hi-events-secret)
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hi-events-secret
+                  key: APP_KEY
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hi-events-secret
+                  key: JWT_SECRET
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hi-events-secret
+                  key: MAIL_PASSWORD
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8123
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8123
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

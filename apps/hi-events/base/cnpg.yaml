@@ -1,0 +1,20 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cnpg
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+  instances: 1
+  bootstrap:
+    initdb:
+      database: hi_events
+      owner: hi_events
+      secret:
+        name: cnpg-secret
+  storage:
+    size: 5Gi
+    storageClass: cephfs
+  postgresql:
+    parameters:
+      max_connections: "200"
+      superuser_reserved_connections: "5"

@@ -2,9 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: hi-events-config
-  namespace: hi-events
 data:
-  # URLs runtime (les VITE_* sont baked au build dans l'image all-in-one, inutiles ici)
+  # Runtime URLs (VITE_* are baked at build time in the all-in-one image)
   APP_FRONTEND_URL: "https://hi-events.prodv2.cedille.club"
   APP_URL: "https://hi-events.prodv2.cedille.club"
   APP_DISABLE_REGISTRATION: "false"
@@ -15,10 +14,6 @@ data:
   FILESYSTEM_PRIVATE_DISK: "local"
 
   DB_CONNECTION: "pgsql"
-  DB_HOST: "hi-events-postgres"
-  DB_PORT: "5432"
-  DB_DATABASE: "hi_events"
-  DB_USERNAME: "hi_events"
 
   REDIS_HOST: "hi-events-redis"
   REDIS_PORT: "6379"
@@ -26,7 +21,7 @@ data:
   QUEUE_CONNECTION: "redis"
 
   MAIL_MAILER: "smtp"
-  MAIL_HOST: "smtp.example.com" # TODO: remplacer par le serveur SMTP dès qu'on en a un
+  MAIL_HOST: "smtp.example.com" # TODO: replace once an SMTP relay is available
   MAIL_PORT: "587"
   MAIL_FROM_ADDRESS: "noreply@cedille.club"
   MAIL_FROM_NAME: "Cedille Events"
