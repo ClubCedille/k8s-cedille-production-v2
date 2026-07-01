@@ -28,6 +28,26 @@ spec:
                   key: password
           ports:
             - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - commandes_patchets_user
+                - -d
+                - commandes_patchets2
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - commandes_patchets_user
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
