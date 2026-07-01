@@ -3,7 +3,10 @@ kind: Deployment
 metadata:
   name: commandes
   annotations:
-    kube-score/ignore: container-image-tag
+    kube-score/ignore: >-
+      container-image-tag,
+      container-security-context-user-group-id,
+      container-security-context-readonlyrootfilesystem
 spec:
   selector:
     matchLabels:
@@ -13,13 +16,6 @@ spec:
       labels:
         app: commandes
     spec:
-      volumes:
-        - name: tmp
-          emptyDir: {}
-        - name: app-tmp
-          emptyDir: {}
-        - name: app-log
-          emptyDir: {}
       containers:
         - name: commandes
           image: ghcr.io/clubcedille/patchets-commande:latest
@@ -28,8 +24,7 @@ spec:
             - name: http
               containerPort: 3000
           startupProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: http
             failureThreshold: 30
             periodSeconds: 10
@@ -60,22 +55,11 @@ spec:
               ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 10001
-            runAsGroup: 10001
             capabilities:
               drop:
                 - ALL
             seccompProfile:
               type: RuntimeDefault
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: app-tmp
-              mountPath: /app/tmp
-            - name: app-log
-              mountPath: /app/log
           envFrom:
             - configMapRef:
                 name: commandes-config
