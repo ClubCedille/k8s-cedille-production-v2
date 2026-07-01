@@ -6,6 +6,6 @@ spec:
   ports:
     - name: commandes
       port: 3000
-      targetPort: 3000
+      targetPort: http
   selector:
     app: commandes
