@@ -29,20 +29,28 @@ spec:
             failureThreshold: 30
             periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /?probe=readiness
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 5
+            exec:
+              command:
+                - bundle
+                - exec
+                - rails
+                - runner
+                - ActiveRecord::Base.connection.execute('SELECT 1'); puts 'ready'
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 20
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
+            exec:
+              command:
+                - bundle
+                - exec
+                - rails
+                - runner
+                - ActiveRecord::Base.connection.execute('SELECT 1'); puts 'alive'
+            initialDelaySeconds: 120
+            periodSeconds: 60
+            timeoutSeconds: 20
             failureThreshold: 3
           resources:
             requests:
