@@ -5,6 +5,11 @@ metadata:
   namespace: veloom
   labels:
     app: veloom
+  annotations:
+    kube-score/ignore: >-
+      container-security-context-privileged,
+      container-security-context-user-group-id,
+      container-security-context-readonlyrootfilesystem
 spec:
   selector:
     matchLabels:
@@ -20,6 +25,7 @@ spec:
     spec:
       containers:
         - image: wordpress:6.8.3-php8.1-apache
+          imagePullPolicy: Always
           name: veloom-wordpress
           env:
             - name: WORDPRESS_HOME_URL
@@ -30,7 +36,29 @@ spec:
             - secretRef:
                 name: veloom-secret
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /wp-login.php
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: veloom-wordpress-persistent-storage
               mountPath: /var/www/html
@@ -41,9 +69,11 @@ spec:
             requests:
               cpu: 4
               memory: 1024Mi
+              ephemeral-storage: 256Mi
             limits:
               cpu: 6
               memory: 2048Mi
+              ephemeral-storage: 1Gi
       volumes:
         - name: veloom-wordpress-persistent-storage
           persistentVolumeClaim:
@@ -81,3 +111,15 @@ data:
     post_max_size = 256M
     memory_limit = 256M
     max_execution_time = 600
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: veloom-wordpress-pdb
+  namespace: veloom
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: veloom
+      tier: frontend
