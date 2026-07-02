@@ -7,6 +7,14 @@ spec:
     fqdn: evovelo.etsmtl.ca
     tls:
       secretName: veloom-prod-tls
+    corsPolicy:
+      allowOrigin:
+        - "https://evovelo.etsmtl.ca"
+        - "https://evovelo.cedille.club"
+      allowMethods:
+        - "*"
+      allowHeaders:
+        - "*"
   routes:
     - conditions:
         - prefix: /
@@ -17,14 +25,6 @@ spec:
         set:
           - name: X-Forwarded-Proto
             value: https
-      cors:
-        allowOrigin:
-          - "https://evovelo.etsmtl.ca"
-          - "https://evovelo.cedille.club"
-        allowMethods:
-          - "*"
-        allowHeaders:
-          - "*"
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
