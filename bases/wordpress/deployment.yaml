@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: wordpress
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+        - image: wordpress:6.8.3-php8.1-apache
+          name: wordpress
+          envFrom:
+            - secretRef:
+                name: wordpress-secret
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/uploads.ini
+              subPath: uploads.ini
+          resources:
+            requests:
+              cpu: 4
+              memory: 1024Mi
+            limits:
+              cpu: 6
+              memory: 2048Mi
+      volumes:
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: wp-pv-claim
+        - name: php-config
+          configMap:
+            defaultMode: 420
+            name: wp-php-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  namespace: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: cephfs
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wp-php-config
+data:
+  uploads.ini: |-
+    file_uploads = On
+    upload_max_filesize = 256M
+    post_max_size = 256M
+    memory_limit = 256M
+    max_execution_time = 600
