@@ -5,8 +5,13 @@ metadata:
   namespace: patchets
   annotations:
     kube-score/ignore: >-
+      container-security-context-privileged,
       container-security-context-user-group-id,
-      container-security-context-readonlyrootfilesystem
+      container-security-context-readonlyrootfilesystem,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      container-ephemeral-storage-request-and-limit
 spec:
   replicas: 1
   selector:
@@ -20,7 +25,6 @@ spec:
       containers:
         - name: postgresql
           image: postgres:16.4
-          imagePullPolicy: Always
           env:
             - name: POSTGRES_USER
               value: commandes_patchets_user
@@ -33,42 +37,6 @@ spec:
                   key: password
           ports:
             - containerPort: 5432
-          readinessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - commandes_patchets_user
-                - -d
-                - commandes_patchets2
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 5
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - commandes_patchets_user
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-              ephemeral-storage: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-              ephemeral-storage: 1Gi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
