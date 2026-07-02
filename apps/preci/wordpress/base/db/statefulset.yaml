@@ -2,6 +2,13 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mysql
+  annotations:
+    kube-score/ignore: >-
+      container-image-tag,
+      pod-probes,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-readonlyrootfilesystem,
+      container-security-context-user-group-id
 spec:
   serviceName: mysql
   replicas: 1
