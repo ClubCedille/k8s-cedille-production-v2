@@ -13,7 +13,7 @@ spec:
         name: cnpg-secret
   storage:
     size: 5Gi
-    storageClass: cephfs
+    storageClass: ceph-rbd
   postgresql:
     parameters:
       max_connections: "200"
