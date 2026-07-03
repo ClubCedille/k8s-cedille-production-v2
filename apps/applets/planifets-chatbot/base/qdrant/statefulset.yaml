@@ -35,6 +35,8 @@ spec:
                 secretKeyRef:
                   name: planifets-chatbot-secret
                   key: qdrant_api_key
+            - name: QDRANT__STORAGE__SNAPSHOTS_PATH
+              value: /qdrant/storage/snapshots
           livenessProbe:
             tcpSocket:
               port: 6333
