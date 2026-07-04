@@ -5,6 +5,7 @@ namePrefix: raconteurs-
 
 resources:
   - ../../../../bases/grav
+  - vault-secret.yaml
 
 patches:
   - path: vault-patch.yaml
