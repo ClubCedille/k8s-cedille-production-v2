@@ -43,14 +43,6 @@ spec:
               port: http
             failureThreshold: 30
             periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /wp-login.php
