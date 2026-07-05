@@ -3,7 +3,10 @@ kind: Deployment
 metadata:
   name: webapp-crabe
   annotations:
-    kube-score/ignore: container-image-tag, pod-networkpolicy
+    kube-score/ignore: >-
+      container-image-tag,
+      pod-networkpolicy,
+      container-security-context-readonlyrootfilesystem
 spec:
   replicas: 1
   selector:

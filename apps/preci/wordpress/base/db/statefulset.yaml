@@ -5,7 +5,6 @@ metadata:
   annotations:
     kube-score/ignore: >-
       container-image-tag,
-      pod-probes,
       container-ephemeral-storage-request-and-limit,
       container-security-context-readonlyrootfilesystem,
       container-security-context-user-group-id
@@ -28,6 +27,13 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
+          readinessProbe:
+            tcpSocket:
+              port: mysql
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           env:
             - name: MYSQL_USER
               valueFrom:
