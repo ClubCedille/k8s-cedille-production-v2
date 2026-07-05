@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: {{ namespace }}
+
+resources:
+  - ../../../../bases/wordpress
+  - configMap.yaml
+  - ingress.yaml
+  - vault-secret.yaml
+
+patches:
+  - target:
+      kind: RandomSecret
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/{{ namespace }}/default/wordpress
+  - target:
+      kind: Deployment
+      name: wordpress
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: "{{ wordpress_image }}"
+      - op: replace
+        path: /spec/template/spec/initContainers/0/image
+        value: "{{ wordpress_cli_image }}"
+  - target:
+      kind: StatefulSet
+      name: mysql
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: "{{ mysql_image }}"
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: "{{ mysql_storage }}"
+  - target:
+      kind: PersistentVolumeClaim
+      name: wordpress-content-pvc
+    patch: |-
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: "{{ wordpress_storage }}"

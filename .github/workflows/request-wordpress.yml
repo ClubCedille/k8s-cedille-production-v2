@@ -1,0 +1,206 @@
+name: Demander un site web WordPress
+
+on:
+  workflow_dispatch:
+    inputs:
+      domaine:
+        type: string
+        required: true
+        description: Domaine a utiliser, ex. club.etsmtl.ca
+      nom_club:
+        type: string
+        required: true
+        description: Slug du club en minuscules, sans espaces, ex. mon-club
+      contexte:
+        type: string
+        required: false
+        description: Contexte sur la demande
+      wordpress_image:
+        type: string
+        required: false
+        default: wordpress:6.8.3-php8.2-apache
+        description: Image WordPress a deployer
+      wordpress_cli_image:
+        type: string
+        required: false
+        default: wordpress:cli-php8.2
+        description: Image WP-CLI pour initialiser WordPress
+      mysql_image:
+        type: string
+        required: false
+        default: mysql:8.4
+        description: Image MySQL a deployer
+      wordpress_storage:
+        type: string
+        required: false
+        default: 10Gi
+        description: Taille du PVC WordPress, ex. 10Gi
+      mysql_storage:
+        type: string
+        required: false
+        default: 10Gi
+        description: Taille du PVC MySQL, ex. 10Gi
+      cluster_issuer:
+        type: choice
+        required: false
+        default: letsencrypt-http
+        description: ClusterIssuer cert-manager a utiliser
+        options:
+          - letsencrypt-http
+          - letsencrypt-prod
+          - letsencrypt-staging
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      j2_vars: |
+        deployment_prefix=${{ inputs.nom_club }}
+        namespace=${{ inputs.nom_club }}-wordpress
+        hostname=${{ inputs.domaine }}
+        wordpress_image=${{ inputs.wordpress_image }}
+        wordpress_cli_image=${{ inputs.wordpress_cli_image }}
+        mysql_image=${{ inputs.mysql_image }}
+        wordpress_storage=${{ inputs.wordpress_storage }}
+        mysql_storage=${{ inputs.mysql_storage }}
+        cluster_issuer=${{ inputs.cluster_issuer }}
+        requester=${{ github.event.sender.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate inputs
+        env:
+          INPUT_DOMAINE: ${{ inputs.domaine }}
+          INPUT_NOM_CLUB: ${{ inputs.nom_club }}
+          INPUT_WORDPRESS_STORAGE: ${{ inputs.wordpress_storage }}
+          INPUT_MYSQL_STORAGE: ${{ inputs.mysql_storage }}
+          INPUT_WORDPRESS_IMAGE: ${{ inputs.wordpress_image }}
+          INPUT_WORDPRESS_CLI_IMAGE: ${{ inputs.wordpress_cli_image }}
+          INPUT_MYSQL_IMAGE: ${{ inputs.mysql_image }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$INPUT_NOM_CLUB" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]]; then
+            echo "::error::nom_club doit etre un slug DNS: minuscules, chiffres et tirets seulement."
+            exit 1
+          fi
+
+          if [ "${#INPUT_NOM_CLUB}" -gt 40 ]; then
+            echo "::error::nom_club doit contenir 40 caracteres ou moins."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_DOMAINE" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$ ]]; then
+            echo "::error::domaine doit etre un FQDN en minuscules, ex. club.etsmtl.ca."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_WORDPRESS_STORAGE" =~ ^[0-9]+(Mi|Gi|Ti)$ ]]; then
+            echo "::error::wordpress_storage doit ressembler a 10Gi, 512Mi ou 1Ti."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_MYSQL_STORAGE" =~ ^[0-9]+(Mi|Gi|Ti)$ ]]; then
+            echo "::error::mysql_storage doit ressembler a 10Gi, 512Mi ou 1Ti."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_WORDPRESS_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::wordpress_image doit etre une reference d'image Docker valide."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_WORDPRESS_CLI_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::wordpress_cli_image doit etre une reference d'image Docker valide."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_MYSQL_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::mysql_image doit etre une reference d'image Docker valide."
+            exit 1
+          fi
+
+          if [ -e "apps/$INPUT_NOM_CLUB/wordpress" ]; then
+            echo "::error::apps/$INPUT_NOM_CLUB/wordpress existe deja."
+            exit 1
+          fi
+
+          if grep -R -F \
+            -e "fqdn: $INPUT_DOMAINE" \
+            -e "host: $INPUT_DOMAINE" \
+            -e "commonName: $INPUT_DOMAINE" \
+            apps >/dev/null; then
+            echo "::error::Le domaine $INPUT_DOMAINE semble deja etre utilise dans apps/."
+            exit 1
+          fi
+
+      - name: Create folders
+        run: mkdir -p "apps/${{ inputs.nom_club }}/wordpress/prod"
+
+      - name: Create kustomize overlay
+        uses: cuchi/jinja2-action@v1.3.0
+        with:
+          template: bases/wordpress/prod-templates/kustomization.yaml.jinja2
+          output_file: apps/${{ inputs.nom_club }}/wordpress/prod/kustomization.yaml
+          strict: true
+          variables: ${{ env.j2_vars }}
+
+      - name: Create WordPress config
+        uses: cuchi/jinja2-action@v1.3.0
+        with:
+          template: bases/wordpress/prod-templates/configMap.yaml.jinja2
+          output_file: apps/${{ inputs.nom_club }}/wordpress/prod/configMap.yaml
+          strict: true
+          variables: ${{ env.j2_vars }}
+
+      - name: Create ingress
+        uses: cuchi/jinja2-action@v1.3.0
+        with:
+          template: bases/wordpress/prod-templates/ingress.yaml.jinja2
+          output_file: apps/${{ inputs.nom_club }}/wordpress/prod/ingress.yaml
+          strict: true
+          variables: ${{ env.j2_vars }}
+
+      - name: Create vault secret sync
+        uses: cuchi/jinja2-action@v1.3.0
+        with:
+          template: bases/wordpress/prod-templates/vault-secret.yaml.jinja2
+          output_file: apps/${{ inputs.nom_club }}/wordpress/prod/vault-secret.yaml
+          strict: true
+          variables: ${{ env.j2_vars }}
+
+      - name: Create argo app
+        uses: cuchi/jinja2-action@v1.3.0
+        with:
+          template: bases/wordpress/prod-templates/argo.yaml.jinja2
+          output_file: apps/${{ inputs.nom_club }}/wordpress/${{ inputs.nom_club }}-wordpress.argoapp.yaml
+          strict: true
+          variables: ${{ env.j2_vars }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: Create a WordPress website for ${{ inputs.nom_club }}
+          branch: wordpress/${{ inputs.nom_club }}
+          team-reviewers: |
+            SRE
+          body: |
+            Nom du club: ${{ inputs.nom_club }}
+            Domaine: ${{ inputs.domaine }}
+            Namespace: ${{ inputs.nom_club }}-wordpress
+            Contexte: ${{ inputs.contexte }}
+
+            Le site sera disponible a https://${{ inputs.domaine }} apres la synchronisation Argo CD, la creation du certificat et la configuration DNS.
+
+            WordPress est initialise automatiquement avec l'utilisateur `admin`. Le club peut ensuite se connecter a `/wp-admin`, changer le mot de passe et personnaliser le site.
+
+            Secrets generes par Vault:
+            > `kv/data/${{ inputs.nom_club }}-wordpress/default/wordpress`
+
+            Mot de passe admin initial:
+            > `kv/data/${{ inputs.nom_club }}-wordpress/default/wordpress/wordpress-admin-password`
+          token: ${{ secrets.PULL_REQUEST_TOKEN }}

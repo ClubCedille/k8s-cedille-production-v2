@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app.kubernetes.io/name: wordpress
+    app.kubernetes.io/component: frontend
+  annotations:
+    kube-score/ignore: >-
+      container-security-context-readonlyrootfilesystem,
+      container-security-context-user-group-id
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wordpress
+      app.kubernetes.io/component: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wordpress
+        app.kubernetes.io/component: frontend
+    spec:
+      securityContext:
+        fsGroup: 33
+        runAsGroup: 33
+        runAsUser: 33
+      initContainers:
+        - name: wordpress-install
+          image: wordpress:cli-php8.2
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: wordpress-config
+            - secretRef:
+                name: wordpress-secret
+          command:
+            - sh
+            - -ec
+            - |-
+              if [ ! -f /var/www/html/wp-load.php ]; then
+                wp core download --path=/var/www/html
+              fi
+
+              if [ ! -f /var/www/html/wp-config.php ]; then
+                wp config create \
+                  --path=/var/www/html \
+                  --dbname="$WORDPRESS_DB_NAME" \
+                  --dbuser="$WORDPRESS_DB_USER" \
+                  --dbpass="$WORDPRESS_DB_PASSWORD" \
+                  --dbhost="$WORDPRESS_DB_HOST" \
+                  --skip-check \
+                  --skip-salts \
+                  --extra-php <<'PHP'
+              if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $_SERVER['HTTPS'] = 'on';
+              }
+              define('WP_HOME', getenv('WORDPRESS_HOME'));
+              define('WP_SITEURL', getenv('WORDPRESS_SITEURL'));
+              define('AUTH_KEY', getenv('WORDPRESS_AUTH_KEY'));
+              define('SECURE_AUTH_KEY', getenv('WORDPRESS_SECURE_AUTH_KEY'));
+              define('LOGGED_IN_KEY', getenv('WORDPRESS_LOGGED_IN_KEY'));
+              define('NONCE_KEY', getenv('WORDPRESS_NONCE_KEY'));
+              define('AUTH_SALT', getenv('WORDPRESS_AUTH_SALT'));
+              define('SECURE_AUTH_SALT', getenv('WORDPRESS_SECURE_AUTH_SALT'));
+              define('LOGGED_IN_SALT', getenv('WORDPRESS_LOGGED_IN_SALT'));
+              define('NONCE_SALT', getenv('WORDPRESS_NONCE_SALT'));
+              PHP
+              fi
+
+              until wp db check --path=/var/www/html; do
+                sleep 5
+              done
+
+              if ! wp core is-installed --path=/var/www/html; then
+                wp core install \
+                  --path=/var/www/html \
+                  --url="$WORDPRESS_HOME" \
+                  --title="$WORDPRESS_SITE_TITLE" \
+                  --admin_user="$WORDPRESS_ADMIN_USER" \
+                  --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+                  --admin_email="$WORDPRESS_ADMIN_EMAIL" \
+                  --skip-email
+              fi
+          volumeMounts:
+            - name: wordpress-content
+              mountPath: /var/www/html
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+              ephemeral-storage: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+      containers:
+        - name: wordpress
+          image: wordpress:6.8.3-php8.2-apache
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: wordpress-config
+            - secretRef:
+                name: wordpress-secret
+          ports:
+            - name: http
+              containerPort: 80
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /wp-login.php
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: wordpress-content
+              mountPath: /var/www/html
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/uploads.ini
+              subPath: uploads.ini
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+              ephemeral-storage: 256Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeral-storage: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+      volumes:
+        - name: wordpress-content
+          persistentVolumeClaim:
+            claimName: wordpress-content-pvc
+        - name: php-config
+          configMap:
+            name: wordpress-php-config
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: wordpress-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wordpress
+      app.kubernetes.io/component: frontend
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-content-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: cephfs
+  resources:
+    requests:
+      storage: 10Gi

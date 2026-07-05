@@ -1,0 +1,33 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: wordpress
+spec:
+  virtualhost:
+    fqdn: {{ hostname }}
+    tls:
+      secretName: wordpress-tls
+      minimumProtocolVersion: "1.2"
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: wordpress
+          port: 80
+      requestHeadersPolicy:
+        set:
+          - name: X-Forwarded-Proto
+            value: https
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wordpress-tls
+spec:
+  secretName: wordpress-tls
+  issuerRef:
+    name: {{ cluster_issuer }}
+    kind: ClusterIssuer
+  commonName: {{ hostname }}
+  dnsNames:
+    - {{ hostname }}
