@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: mon-club-wordpress
+
+resources:
+  - ../../../../bases/wordpress
+  - configMap.yaml
+  - ingress.yaml
+  - vault-secret.yaml
+
+patches:
+  - target:
+      kind: RandomSecret
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: kv/data/mon-club-wordpress/default/wordpress
+  - target:
+      kind: Deployment
+      name: wordpress
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: "wordpress:6.8.3-php8.2-apache"
+      - op: replace
+        path: /spec/template/spec/initContainers/0/image
+        value: "wordpress:cli-php8.2"
+  - target:
+      kind: StatefulSet
+      name: mysql
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: "mysql:8.4"
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: "10Gi"
+  - target:
+      kind: PersistentVolumeClaim
+      name: wordpress-content-pvc
+    patch: |-
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: "10Gi"
