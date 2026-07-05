@@ -3,14 +3,14 @@ name: Demander un site web WordPress
 on:
   workflow_dispatch:
     inputs:
-      domaine:
-        type: string
-        required: true
-        description: Domaine a utiliser, ex. club.etsmtl.ca
       nom_club:
         type: string
         required: true
-        description: Slug du club en minuscules, sans espaces, ex. mon-club
+        description: Slug du club, ex. mon-club (pas le domaine complet)
+      domaine:
+        type: string
+        required: true
+        description: Domaine complet a utiliser, ex. mon-club.prodv2.cedille.club
       contexte:
         type: string
         required: false
@@ -98,6 +98,13 @@ jobs:
           print(unicodedata.normalize("NFKC", os.environ["INPUT_DOMAINE"]).strip().lower().rstrip("."))
           PY
           )
+
+          if [[ "$deployment_prefix" == *.* && "$hostname" != *.* ]]; then
+            echo "::notice::Les champs nom_club et domaine semblent inverses; correction automatique."
+            tmp="$deployment_prefix"
+            deployment_prefix="$hostname"
+            hostname="$tmp"
+          fi
 
           if [[ ! "$deployment_prefix" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]]; then
             echo "::error::nom_club doit etre un slug DNS: minuscules, chiffres et tirets seulement."
