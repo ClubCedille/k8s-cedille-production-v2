@@ -30,7 +30,7 @@ spec:
       containers:
         - name: wordpress
           image: wordpress:6.8.3-php8.2-apache
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: wordpress-config

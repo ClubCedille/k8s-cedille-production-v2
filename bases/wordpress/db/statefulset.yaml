@@ -27,7 +27,7 @@ spec:
       containers:
         - name: mysql
           image: mysql:8.4
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: wordpress-config
