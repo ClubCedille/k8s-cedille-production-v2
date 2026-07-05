@@ -23,6 +23,9 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/image
         value: "{{ wordpress_image }}"
+      - op: replace
+        path: /spec/template/spec/initContainers/0/image
+        value: "{{ wordpress_cli_image }}"
   - target:
       kind: StatefulSet
       name: mysql

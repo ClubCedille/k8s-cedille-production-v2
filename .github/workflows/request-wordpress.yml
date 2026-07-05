@@ -20,6 +20,11 @@ on:
         required: false
         default: wordpress:6.8.3-php8.2-apache
         description: Image WordPress a deployer
+      wordpress_cli_image:
+        type: string
+        required: false
+        default: wordpress:cli-php8.2
+        description: Image WP-CLI pour initialiser WordPress
       mysql_image:
         type: string
         required: false
@@ -57,6 +62,7 @@ jobs:
         namespace=${{ inputs.nom_club }}-wordpress
         hostname=${{ inputs.domaine }}
         wordpress_image=${{ inputs.wordpress_image }}
+        wordpress_cli_image=${{ inputs.wordpress_cli_image }}
         mysql_image=${{ inputs.mysql_image }}
         wordpress_storage=${{ inputs.wordpress_storage }}
         mysql_storage=${{ inputs.mysql_storage }}
@@ -73,6 +79,7 @@ jobs:
           INPUT_WORDPRESS_STORAGE: ${{ inputs.wordpress_storage }}
           INPUT_MYSQL_STORAGE: ${{ inputs.mysql_storage }}
           INPUT_WORDPRESS_IMAGE: ${{ inputs.wordpress_image }}
+          INPUT_WORDPRESS_CLI_IMAGE: ${{ inputs.wordpress_cli_image }}
           INPUT_MYSQL_IMAGE: ${{ inputs.mysql_image }}
         run: |
           set -euo pipefail
@@ -102,8 +109,18 @@ jobs:
             exit 1
           fi
 
-          if [[ "$INPUT_WORDPRESS_IMAGE" =~ [[:space:]] || "$INPUT_MYSQL_IMAGE" =~ [[:space:]] ]]; then
-            echo "::error::Les noms d'image ne doivent pas contenir d'espaces."
+          if [[ ! "$INPUT_WORDPRESS_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::wordpress_image doit etre une reference d'image Docker valide."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_WORDPRESS_CLI_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::wordpress_cli_image doit etre une reference d'image Docker valide."
+            exit 1
+          fi
+
+          if [[ ! "$INPUT_MYSQL_IMAGE" =~ ^[A-Za-z0-9][A-Za-z0-9._/:@-]*$ ]]; then
+            echo "::error::mysql_image doit etre une reference d'image Docker valide."
             exit 1
           fi
 
@@ -179,8 +196,11 @@ jobs:
 
             Le site sera disponible a https://${{ inputs.domaine }} apres la synchronisation Argo CD, la creation du certificat et la configuration DNS.
 
-            Au premier chargement, WordPress affiche son assistant d'installation. Le club peut y creer son compte administrateur, puis personnaliser le site depuis `/wp-admin`.
+            WordPress est initialise automatiquement avec l'utilisateur `admin`. Le club peut ensuite se connecter a `/wp-admin`, changer le mot de passe et personnaliser le site.
 
             Secrets generes par Vault:
             > `kv/data/${{ inputs.nom_club }}-wordpress/default/wordpress`
+
+            Mot de passe admin initial:
+            > `kv/data/${{ inputs.nom_club }}-wordpress/default/wordpress/wordpress-admin-password`
           token: ${{ secrets.PULL_REQUEST_TOKEN }}

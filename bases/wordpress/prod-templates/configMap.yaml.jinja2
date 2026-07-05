@@ -8,6 +8,9 @@ data:
   WORDPRESS_DB_USER: "wordpress"
   WORDPRESS_HOME: "https://{{ hostname }}"
   WORDPRESS_SITEURL: "https://{{ hostname }}"
+  WORDPRESS_SITE_TITLE: "{{ deployment_prefix }}"
+  WORDPRESS_ADMIN_USER: "admin"
+  WORDPRESS_ADMIN_EMAIL: "admin@{{ hostname }}"
   WORDPRESS_CONFIG_EXTRA: |-
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
       $_SERVER['HTTPS'] = 'on';
