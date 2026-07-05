@@ -21,6 +21,13 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
+          readinessProbe:
+            tcpSocket:
+              port: mysql
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           env:
             - name: MYSQL_USER
               valueFrom:
