@@ -5,6 +5,8 @@ resources:
   - ../base
   - ingress.yaml
   - configMap.yaml
+  - random-secret.yaml
+  - vault-secret.yaml
 
 patchesStrategicMerge:
   - patch-backend-image.yaml
