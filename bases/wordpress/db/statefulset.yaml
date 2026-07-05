@@ -33,6 +33,12 @@ spec:
                 name: wordpress-config
             - secretRef:
                 name: wordpress-secret
+          env:
+            - name: MYSQL_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: MYSQL_ROOT_PASSWORD
           ports:
             - name: mysql
               containerPort: 3306
@@ -49,8 +55,12 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
-              port: mysql
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - --host=127.0.0.1
+                - --user=root
             initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 5
