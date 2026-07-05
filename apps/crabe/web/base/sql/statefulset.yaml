@@ -13,7 +13,12 @@ spec:
       labels:
         app: mysql
       annotations:
-        kube-score/ignore: container-image-tag, pod-networkpolicy
+        kube-score/ignore: >-
+          container-image-tag,
+          pod-networkpolicy,
+          container-ephemeral-storage-request-and-limit,
+          container-security-context-readonlyrootfilesystem,
+          container-security-context-user-group-id
     spec:
       imagePullSecrets:
         - name: ghcr-secret

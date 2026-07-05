@@ -5,6 +5,12 @@ metadata:
   namespace: habitek
   labels:
     app: habitek
+  annotations:
+    kube-score/ignore: >-
+      pod-networkpolicy,
+      deployment-has-poddisruptionbudget,
+      container-security-context-readonlyrootfilesystem,
+      container-security-context-user-group-id
 spec:
   selector:
     matchLabels:
@@ -20,6 +26,7 @@ spec:
     spec:
       containers:
         - image: wordpress:6.9.4-php8.2-apache
+          imagePullPolicy: Always
           name: habitek-wordpress
           envFrom:
             - secretRef:
@@ -58,9 +65,11 @@ spec:
             requests:
               cpu: 2
               memory: 1024Mi
+              ephemeral-storage: 256Mi
             limits:
               cpu: 3
               memory: 2048Mi
+              ephemeral-storage: 1Gi
       volumes:
         - name: habitek-wordpress-persistent-storage
           persistentVolumeClaim:

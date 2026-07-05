@@ -48,6 +48,12 @@ patches:
       kind: Deployment
       name: grav
     patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits
+        value:
+          cpu: 500m
+          memory: 512Mi
+          ephemeral-storage: 1Gi
       - op: replace
         path: /spec/template/spec/containers/0/readinessProbe/httpGet/path
         value: /accueil
