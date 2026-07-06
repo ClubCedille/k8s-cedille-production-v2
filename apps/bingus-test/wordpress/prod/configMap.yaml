@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-config
+data:
+  WORDPRESS_DB_HOST: "mysql:3306"
+  WORDPRESS_DB_NAME: "wordpress"
+  WORDPRESS_DB_USER: "wordpress"
+  WORDPRESS_HOME: "https://bingus-test.prodv2.cedille.club"
+  WORDPRESS_SITEURL: "https://bingus-test.prodv2.cedille.club"
+  WORDPRESS_SITE_TITLE: "bingus-test"
+  WORDPRESS_ADMIN_USER: "admin"
+  WORDPRESS_ADMIN_EMAIL: "admin@bingus-test.prodv2.cedille.club"
+  WORDPRESS_CONFIG_EXTRA: |-
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+      $_SERVER['HTTPS'] = 'on';
+    }
+    define('WP_HOME', getenv('WORDPRESS_HOME'));
+    define('WP_SITEURL', getenv('WORDPRESS_SITEURL'));
+  MYSQL_DATABASE: "wordpress"
+  MYSQL_USER: "wordpress"
