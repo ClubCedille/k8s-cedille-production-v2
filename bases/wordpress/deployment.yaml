@@ -77,7 +77,13 @@ spec:
               PHP
               fi
 
-              until wp db check --path=/var/www/html; do
+              DB_HOST="${WORDPRESS_DB_HOST%:*}"
+              DB_PORT="${WORDPRESS_DB_HOST##*:}"
+              if [ "$DB_PORT" = "$WORDPRESS_DB_HOST" ]; then
+                DB_PORT=3306
+              fi
+
+              until DB_HOST="$DB_HOST" DB_PORT="$DB_PORT" php -r '$db = @new mysqli(getenv("DB_HOST"), getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), (int) getenv("DB_PORT")); exit($db->connect_errno ? 1 : 0);'; do
                 sleep 5
               done
 
