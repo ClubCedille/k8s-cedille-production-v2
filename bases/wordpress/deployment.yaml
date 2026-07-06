@@ -40,6 +40,13 @@ spec:
             - sh
             - -ec
             - |-
+              export WP_CLI_CACHE_DIR=/tmp/wp-cli-cache
+              mkdir -p "$WP_CLI_CACHE_DIR"
+
+              wp() {
+                php -d memory_limit=512M /usr/local/bin/wp "$@"
+              }
+
               if [ ! -f /var/www/html/wp-load.php ]; then
                 wp core download --path=/var/www/html
               fi
@@ -70,7 +77,13 @@ spec:
               PHP
               fi
 
-              until wp db check --path=/var/www/html; do
+              DB_HOST="${WORDPRESS_DB_HOST%:*}"
+              DB_PORT="${WORDPRESS_DB_HOST##*:}"
+              if [ "$DB_PORT" = "$WORDPRESS_DB_HOST" ]; then
+                DB_PORT=3306
+              fi
+
+              until DB_HOST="$DB_HOST" DB_PORT="$DB_PORT" php -r '$db = @new mysqli(getenv("DB_HOST"), getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), (int) getenv("DB_PORT")); exit($db->connect_errno ? 1 : 0);'; do
                 sleep 5
               done
 
@@ -87,6 +100,8 @@ spec:
           volumeMounts:
             - name: wordpress-content
               mountPath: /var/www/html
+            - name: wordpress-tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 100m
@@ -154,6 +169,8 @@ spec:
         - name: wordpress-content
           persistentVolumeClaim:
             claimName: wordpress-content-pvc
+        - name: wordpress-tmp
+          emptyDir: {}
         - name: php-config
           configMap:
             name: wordpress-php-config
