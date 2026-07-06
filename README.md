@@ -14,3 +14,7 @@ Ce dépôt est conçu pour gérer le flux de travail GitOps pour le cluster prod
 
 Si vous êtes membres de l'organisation GitHub [ClubCedille](https://github.com/ClubCedille), vous pouvez cloner le dépôt localement, apporter vos modifications sur une branche (de préférence une branche liée à un issue), puis pousser vos changements sur cette branche. Ensuite, vous pouvez soumettre une demande de pull (une `pull request`) vers la branche `main` ou `master`.
 
+### Documentation
+
+- [Déployer un site WordPress pour un club](docs/deployer-wordpress.md)
+
