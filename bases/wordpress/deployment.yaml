@@ -40,6 +40,13 @@ spec:
             - sh
             - -ec
             - |-
+              export WP_CLI_CACHE_DIR=/tmp/wp-cli-cache
+              mkdir -p "$WP_CLI_CACHE_DIR"
+
+              wp() {
+                php -d memory_limit=512M /usr/local/bin/wp "$@"
+              }
+
               if [ ! -f /var/www/html/wp-load.php ]; then
                 wp core download --path=/var/www/html
               fi
@@ -87,6 +94,8 @@ spec:
           volumeMounts:
             - name: wordpress-content
               mountPath: /var/www/html
+            - name: wordpress-tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 100m
@@ -154,6 +163,8 @@ spec:
         - name: wordpress-content
           persistentVolumeClaim:
             claimName: wordpress-content-pvc
+        - name: wordpress-tmp
+          emptyDir: {}
         - name: php-config
           configMap:
             name: wordpress-php-config
