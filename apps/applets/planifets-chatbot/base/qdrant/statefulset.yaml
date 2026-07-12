@@ -24,6 +24,7 @@ spec:
         - name: qdrant
           image: qdrant/qdrant:latest
           imagePullPolicy: Always
+          workingDir: /tmp
           ports:
             - containerPort: 6333
               name: http
@@ -37,6 +38,8 @@ spec:
                   key: qdrant_api_key
             - name: QDRANT__STORAGE__SNAPSHOTS_PATH
               value: /qdrant/storage/snapshots
+            - name: QDRANT__TELEMETRY_DISABLED
+              value: "true"
           livenessProbe:
             tcpSocket:
               port: 6333
