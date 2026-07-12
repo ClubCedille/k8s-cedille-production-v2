@@ -24,6 +24,10 @@ helmCharts:
           repository: bitnami/postgresql
           tag: 11.21.0-debian-11-r52
         existingSecret: wikijs-postgres-secret
+        securityContext:
+          enabled: false
+        volumePermissions:
+          enabled: false
         persistence:
           enabled: true
           size: 10Gi
