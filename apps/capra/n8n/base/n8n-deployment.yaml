@@ -26,6 +26,8 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
+              add:
+                - CHOWN
               drop:
                 - ALL
             runAsUser: 0
@@ -74,6 +76,8 @@ spec:
               value: "5678"
             - name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
               value: "true"
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=768"
           image: n8nio/n8n
           imagePullPolicy: Always
           name: n8n
@@ -110,11 +114,11 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: "250Mi"
+              memory: "512Mi"
               ephemeral-storage: 256Mi
             limits:
               cpu: 500m
-              memory: "500Mi"
+              memory: "1Gi"
               ephemeral-storage: 1Gi
           volumeMounts:
             - mountPath: /home/node/.n8n
