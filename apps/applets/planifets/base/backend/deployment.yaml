@@ -59,6 +59,13 @@ spec:
               value: /transformers-cache
             - name: EMBEDDING_ORT_THREADS
               value: "2"
+            - name: QDRANT_URL
+              value: "http://planifets-chatbot-qdrant:6333"
+            - name: QDRANT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: planifets-chatbot-secret
+                  key: qdrant_api_key
           livenessProbe:
             httpGet:
               path: /api/health
