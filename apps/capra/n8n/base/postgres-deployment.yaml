@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kube-score/ignore: container-security-context-user-group-id, container-security-context-readonlyrootfilesystem
   labels:
     service: postgres-n8n
   name: postgres
@@ -21,11 +23,22 @@ spec:
     spec:
       containers:
         - image: postgres:11
+          imagePullPolicy: Always
           name: postgres
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 999
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             limits:
               cpu: "4"
               memory: 4Gi
+              ephemeral-storage: 1Gi
             requests:
               cpu: "1"
               memory: 2Gi

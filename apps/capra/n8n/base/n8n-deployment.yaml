@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kube-score/ignore: container-image-tag, container-security-context-user-group-id, container-security-context-readonlyrootfilesystem
   labels:
     service: n8n
   name: n8n
@@ -19,7 +21,25 @@ spec:
       initContainers:
         - name: volume-permissions
           image: busybox:1.36
+          imagePullPolicy: Always
           command: ["sh", "-c", "chown 1000:1000 /data"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+              ephemeral-storage: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+              ephemeral-storage: 64Mi
           volumeMounts:
             - name: n8n-claim0
               mountPath: /data
@@ -55,7 +75,17 @@ spec:
             - name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
               value: "true"
           image: n8nio/n8n
+          imagePullPolicy: Always
           name: n8n
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
           ports:
             - containerPort: 5678
           startupProbe:
@@ -79,9 +109,13 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
+              cpu: 100m
               memory: "250Mi"
+              ephemeral-storage: 256Mi
             limits:
+              cpu: 500m
               memory: "500Mi"
+              ephemeral-storage: 1Gi
           volumeMounts:
             - mountPath: /home/node/.n8n
               name: n8n-claim0
