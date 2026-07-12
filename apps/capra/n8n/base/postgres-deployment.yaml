@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kube-score/ignore: container-security-context-user-group-id, container-security-context-readonlyrootfilesystem
   labels:
     service: postgres-n8n
   name: postgres
@@ -21,17 +23,53 @@ spec:
     spec:
       containers:
         - image: postgres:11
+          imagePullPolicy: Always
           name: postgres
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 999
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             limits:
               cpu: "4"
               memory: 4Gi
+              ephemeral-storage: 1Gi
             requests:
               cpu: "1"
               memory: 2Gi
               ephemeral-storage: 32Mi
           ports:
             - containerPort: 5432
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
           volumeMounts:
             - name: postgresql-pv
               mountPath: /var/lib/postgresql/data

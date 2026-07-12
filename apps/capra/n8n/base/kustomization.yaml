@@ -10,3 +10,4 @@ resources:
   - n8n-service.yaml
   - n8n-deployment.yaml
   - pvc.yaml
+  - networkpolicy.yaml
