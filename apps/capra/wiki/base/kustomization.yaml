@@ -17,6 +17,10 @@ helmCharts:
         cpu: 200m
         memory: 256Mi
       ingress.enabled: false
+      readinessProbe:
+        httpGet:
+          path: /
+          port: http
       postgresql:
         enabled: true
         image:
@@ -34,3 +38,19 @@ helmCharts:
           storageClass: cephfs
       startupProbe:
         initialDelaySeconds: 120
+patches:
+  - target:
+      kind: Pod
+      name: wiki-test-connection
+    patch: |-
+      - op: add
+        path: /spec/containers/0/readinessProbe
+        value:
+          exec:
+            command:
+              - sh
+              - -c
+              - wget -q --spider wiki:80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
