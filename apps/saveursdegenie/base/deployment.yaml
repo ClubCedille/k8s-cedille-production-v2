@@ -15,6 +15,13 @@ spec:
       labels:
         app: saveursdegenie-service
     spec:
+      securityContext:
+        fsGroup: 101
+        runAsGroup: 101
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile:
+          type: RuntimeDefault
       imagePullSecrets:
         - name: ghcr-clubcedille-secret
       containers:
@@ -28,6 +35,10 @@ spec:
                 - ALL
               add:
                 - NET_BIND_SERVICE
+            readOnlyRootFilesystem: true
+            runAsGroup: 101
+            runAsNonRoot: true
+            runAsUser: 101
           readinessProbe:
             httpGet:
               path: /
@@ -45,3 +56,17 @@ spec:
               ephemeral-storage: 1Gi
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
