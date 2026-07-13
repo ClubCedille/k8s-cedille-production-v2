@@ -57,12 +57,12 @@ spec:
               mountPath: /var/www/html
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 250m
+              memory: 512Mi
               ephemeral-storage: 256Mi
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "1"
+              memory: 1Gi
               ephemeral-storage: 1Gi
       volumes:
         - name: preci-wordpress-persistent-storage
