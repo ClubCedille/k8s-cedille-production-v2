@@ -72,11 +72,12 @@ patches:
       metadata:
         name: wiki-postgresql
         annotations:
+          argocd.argoproj.io/sync-options: Replace=true
           kube-score/ignore: pod-networkpolicy, container-security-context-privileged, container-security-context-user-group-id, container-security-context-readonlyrootfilesystem
       spec:
         template:
           spec:
-            nodeSelector: {}
+            nodeSelector: null
             securityContext: {}
             containers:
               - name: wiki-postgresql
