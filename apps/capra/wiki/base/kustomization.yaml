@@ -87,7 +87,8 @@ patches:
       spec:
         template:
           spec:
-            nodeSelector: null
+            nodeSelector:
+              kubernetes.io/hostname: k8s-cedille-production-v2-worker-4
             securityContext: {}
             containers:
               - name: wiki-postgresql
