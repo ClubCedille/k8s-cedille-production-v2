@@ -24,7 +24,6 @@ spec:
         - name: qdrant
           image: qdrant/qdrant:latest
           imagePullPolicy: Always
-          workingDir: /tmp
           ports:
             - containerPort: 6333
               name: http
@@ -63,7 +62,6 @@ spec:
           securityContext:
             runAsUser: 10001
             runAsGroup: 10001
-            readOnlyRootFilesystem: true
           volumeMounts:
             - name: qdrant-storage
               mountPath: /qdrant/storage
