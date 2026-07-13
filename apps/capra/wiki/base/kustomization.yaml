@@ -36,7 +36,7 @@ helmCharts:
         securityContext:
           enabled: false
         livenessProbe:
-          initialDelaySeconds: 900
+          initialDelaySeconds: 3600
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 6
