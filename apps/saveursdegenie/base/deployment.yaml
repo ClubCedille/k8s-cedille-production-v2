@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: saveursdegenie-service
+  namespace: saveursdegenie
   annotations:
     kube-score/ignore: pod-networkpolicy,container-image-tag
 spec:
@@ -20,6 +21,13 @@ spec:
         - name: saveursdegenie-web
           image: ghcr.io/clubcedille/saveursdegenie.etsmtl.ca:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
           readinessProbe:
             httpGet:
               path: /
@@ -34,5 +42,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+              ephemeral-storage: 1Gi
           ports:
             - containerPort: 80
