@@ -73,6 +73,14 @@ patches:
         name: wiki-postgresql
         annotations:
           kube-score/ignore: pod-networkpolicy, container-security-context-privileged, container-security-context-user-group-id, container-security-context-readonlyrootfilesystem
+      spec:
+        template:
+          spec:
+            nodeSelector: {}
+            securityContext: {}
+            containers:
+              - name: wiki-postgresql
+                securityContext: {}
   - target:
       kind: Pod
       name: wiki-test-connection
