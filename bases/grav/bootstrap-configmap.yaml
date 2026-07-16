@@ -34,7 +34,7 @@ data:
     git remote add origin "$auth_url"
     git fetch origin
     git reset --hard "origin/$branch"
-    git clean -fd
+    git clean -fd -e accounts -e data
     git branch --set-upstream-to="origin/$branch"
 
     if [ ! -d pages ] || [ ! -d plugins ] || [ ! -d themes ]; then
