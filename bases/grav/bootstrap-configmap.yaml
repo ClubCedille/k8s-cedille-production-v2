@@ -46,7 +46,10 @@ data:
         fi
       done
 
-      git add config pages plugins themes .gitignore 2>/dev/null || true
+      git add config pages plugins themes
+      if [ -e .gitignore ]; then
+        git add .gitignore
+      fi
       if ! git diff --cached --quiet; then
         git commit -m "Initial Grav site skeleton"
         git push origin "HEAD:$branch"
