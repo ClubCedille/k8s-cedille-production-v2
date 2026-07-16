@@ -35,6 +35,9 @@ patches:
       - op: replace
         path: /spec/dnsNames/0
         value: {{ hostname }}
+      - op: replace
+        path: /spec/issuerRef/name
+        value: {{ cluster_issuer }}
   - target:
       kind: RandomSecret
     patch: |-
