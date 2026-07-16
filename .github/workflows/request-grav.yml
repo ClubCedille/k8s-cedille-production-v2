@@ -2,101 +2,203 @@ name: Demander un site web GRAV
 on:
     workflow_dispatch:
         inputs:
-            domaine:
-                type: string
-                required: true
-                description: Domaine à utiliser (eg cedille.etsmtl.ca)
             nom_club:
                 type: string
                 required: true
-                description: Nom du club. Pas de caractères spéciaux ou d'espaces outre - et _
+                description: Slug du club, ex. mon-club (pas le domaine complet)
+            domaine:
+                type: string
+                required: true
+                description: Domaine complet à utiliser, ex. mon-club.prodv2.cedille.club
             contexte:
                 type: string
                 required: false
                 description: Contexte sur la demande
-            skeleton_url:
-                type: string
+            cluster_issuer:
+                type: choice
                 required: false
-                description: URL du squelette Grav (laisser vide pour le package de base). Voir https://getgrav.org/downloads/skeletons
+                default: letsencrypt-http
+                description: ClusterIssuer cert-manager à utiliser
+                options:
+                    - letsencrypt-http
+                    - letsencrypt-prod
+                    - letsencrypt-staging
 
 jobs:
     create_pr:
         runs-on: ubuntu-latest
-        env:
-            j2_vars: |
-                deployment_prefix=${{inputs.nom_club}}
-                repo_name=${{inputs.domaine}}
-                repo_url=https://github.com/ClubCedille/${{inputs.domaine}}.git
-                namespace=${{inputs.nom_club}}-grav
-                hostname=${{inputs.domaine}}
-                requester=${{github.event.sender.name}}
+        permissions:
+            contents: write
+            pull-requests: write
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+
+            - name: Normalize and validate inputs
+              id: vars
+              env:
+                INPUT_DOMAINE: ${{ github.event.inputs.domaine }}
+                INPUT_NOM_CLUB: ${{ github.event.inputs.nom_club }}
+                INPUT_CLUSTER_ISSUER: ${{ github.event.inputs.cluster_issuer }}
+                REQUESTER: ${{ github.event.sender.name }}
+              run: |
+                set -euo pipefail
+
+                deployment_prefix=$(
+                  python3 - <<'PY'
+                import os
+                import re
+                import unicodedata
+
+                raw = os.environ["INPUT_NOM_CLUB"]
+                value = unicodedata.normalize("NFKC", raw).strip().lower()
+                value = re.sub(r"[\u2010\u2011\u2012\u2013\u2014\u2212]", "-", value)
+                value = re.sub(r"[\s_]+", "-", value)
+                value = re.sub(r"-+", "-", value).strip("-")
+                print(value)
+                PY
+                )
+
+                hostname=$(
+                  python3 - <<'PY'
+                import os
+                import unicodedata
+
+                print(unicodedata.normalize("NFKC", os.environ["INPUT_DOMAINE"]).strip().lower().rstrip("."))
+                PY
+                )
+
+                if [[ "$deployment_prefix" == *.* && "$hostname" != *.* ]]; then
+                  echo "::notice::Les champs nom_club et domaine semblent inversés; correction automatique."
+                  tmp="$deployment_prefix"
+                  deployment_prefix="$hostname"
+                  hostname="$tmp"
+                fi
+
+                if [[ ! "$deployment_prefix" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]]; then
+                  echo "::error::nom_club doit être un slug DNS: minuscules, chiffres et tirets seulement."
+                  echo "::error::Valeur reçue: '$INPUT_NOM_CLUB' | Valeur normalisée: '$deployment_prefix'"
+                  exit 1
+                fi
+
+                if [ "${#deployment_prefix}" -gt 40 ]; then
+                  echo "::error::nom_club doit contenir 40 caractères ou moins."
+                  exit 1
+                fi
+
+                if [[ ! "$hostname" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$ ]]; then
+                  echo "::error::domaine doit être un FQDN en minuscules, ex. club.etsmtl.ca."
+                  echo "::error::Valeur reçue: '$INPUT_DOMAINE' | Valeur normalisée: '$hostname'"
+                  exit 1
+                fi
+
+                if [ -e "apps/$deployment_prefix/grav" ]; then
+                  echo "::error::apps/$deployment_prefix/grav existe déjà."
+                  exit 1
+                fi
+
+                if [ -e "terraform/github/apps-repos/$deployment_prefix-grav.tf" ]; then
+                  echo "::error::terraform/github/apps-repos/$deployment_prefix-grav.tf existe déjà."
+                  exit 1
+                fi
+
+                if [ -e "apps/vault-gh-roles/$deployment_prefix-grav.yaml" ]; then
+                  echo "::error::apps/vault-gh-roles/$deployment_prefix-grav.yaml existe déjà."
+                  exit 1
+                fi
+
+                if grep -R -F \
+                  -e "fqdn: $hostname" \
+                  -e "host: $hostname" \
+                  -e "commonName: $hostname" \
+                  apps >/dev/null; then
+                  echo "::error::Le domaine $hostname semble déjà être utilisé dans apps/."
+                  exit 1
+                fi
+
+                namespace="$deployment_prefix-grav"
+                repo_name="$hostname"
+                repo_url="https://github.com/ClubCedille/$hostname.git"
+
+                {
+                  echo "deployment_prefix=$deployment_prefix"
+                  echo "namespace=$namespace"
+                  echo "hostname=$hostname"
+                  echo "repo_name=$repo_name"
+                  echo "repo_url=$repo_url"
+                  echo "j2_vars<<EOF"
+                  echo "deployment_prefix=$deployment_prefix"
+                  echo "repo_name=$repo_name"
+                  echo "repo_url=$repo_url"
+                  echo "namespace=$namespace"
+                  echo "hostname=$hostname"
+                  echo "cluster_issuer=$INPUT_CLUSTER_ISSUER"
+                  echo "requester=$REQUESTER"
+                  echo "EOF"
+                } >> "$GITHUB_OUTPUT"
+
             - name: Create folders
-              run: mkdir -p apps/${{inputs.nom_club}}/grav/prod
+              run: mkdir -p "apps/${{ steps.vars.outputs.deployment_prefix }}/grav/prod"
+
             - name: Create kustomize
               uses: cuchi/jinja2-action@v1.3.0
               with:
                 template: bases/grav/prod-templates/kustomization.yaml.jinja2
-                output_file: apps/${{inputs.nom_club}}/grav/prod/kustomization.yaml
+                output_file: apps/${{ steps.vars.outputs.deployment_prefix }}/grav/prod/kustomization.yaml
                 strict: true
-                variables: ${{ env.j2_vars }}
+                variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Create vault-patch
               uses: cuchi/jinja2-action@v1.3.0
               with:
                 template: bases/grav/prod-templates/vault-patch.yaml.jinja2
-                output_file: apps/${{inputs.nom_club}}/grav/prod/vault-patch.yaml
+                output_file: apps/${{ steps.vars.outputs.deployment_prefix }}/grav/prod/vault-patch.yaml
                 strict: true
-                variables: ${{ env.j2_vars }}
+                variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Create terraform repo
               uses: cuchi/jinja2-action@v1.3.0
               with:
                 template: bases/grav/prod-templates/grav-repo.tf.jinja2
-                output_file: terraform/github/apps-repos/${{inputs.nom_club}}-grav.tf
+                output_file: terraform/github/apps-repos/${{ steps.vars.outputs.deployment_prefix }}-grav.tf
                 strict: true
-                variables: ${{ env.j2_vars }}
+                variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Create GitHub Secret Engine Role
               uses: cuchi/jinja2-action@v1.3.0
               with:
                 template: bases/grav/prod-templates/gh-role.yaml.jinja2
-                output_file: apps/vault-gh-roles/${{inputs.nom_club}}-grav.yaml
+                output_file: apps/vault-gh-roles/${{ steps.vars.outputs.deployment_prefix }}-grav.yaml
                 strict: true
-                variables: ${{ env.j2_vars }}
+                variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Update vault-gh-roles kustomization
               run: |
                 cd apps/vault-gh-roles
-                if ! grep -q "${{inputs.nom_club}}-grav.yaml" kustomization.yaml; then
-                  yq eval '.resources += ["${{inputs.nom_club}}-grav.yaml"]' -i kustomization.yaml
+                resource="  - ${{ steps.vars.outputs.deployment_prefix }}-grav.yaml"
+                if ! grep -Fxq "$resource" kustomization.yaml; then
+                  printf '%s\n' "$resource" >> kustomization.yaml
                 fi
             - name: Create argo app
               uses: cuchi/jinja2-action@v1.3.0
               with:
                 template: bases/grav/prod-templates/argo.yaml.jinja2
-                output_file: apps/${{inputs.nom_club}}/grav/${{inputs.nom_club}}.argoapp.yaml
+                output_file: apps/${{ steps.vars.outputs.deployment_prefix }}/grav/${{ steps.vars.outputs.deployment_prefix }}-grav.argoapp.yaml
                 strict: true
-                variables: ${{ env.j2_vars }}
-            # - name: Update kustomize files
-            #   run: |
-            #     cd $GITHUB_WORKSPACE/apps/${{inputs.nom_club}}/grav
-            #     kustomize create --resources ${{inputs.nom_club}}.argoapp.yaml
-            #     cd $GITHUB_WORKSPACE/system/vault/configs/gh-roles
-            #     kustomize edit add resource ${{inputs.nom_club}}-grav.yaml
-            #     cd $GITHUB_WORKSPACE/apps/argo-apps
-            #     kustomize edit add resource ../${{inputs.nom_club}}/grav/
+                variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Create Pull Request
               uses: peter-evans/create-pull-request@v5
               with:
-                title: Create a GRAV website for ${{inputs.nom_club}}
-                branch: grav/${{inputs.nom_club}}
+                title: Create a GRAV website for ${{ steps.vars.outputs.deployment_prefix }}
+                branch: grav/${{ steps.vars.outputs.deployment_prefix }}
                 team-reviewers: |
                   SRE
                 body: |
-                    Nom du club: ${{inputs.nom_club}}
-                    Domaine: ${{inputs.domaine}}
+                    Nom du club: ${{ steps.vars.outputs.deployment_prefix }}
+                    Domaine: ${{ steps.vars.outputs.hostname }}
+                    Namespace: ${{ steps.vars.outputs.namespace }}
                     Contexte: ${{inputs.contexte}}
-                    Squelette: ${{inputs.skeleton_url || 'Base Grav Admin (défaut)'}}
+                    ClusterIssuer: ${{ inputs.cluster_issuer }}
+
+                    Le site sera disponible à https://${{ steps.vars.outputs.hostname }} après la synchronisation Argo CD, la création du certificat et la configuration DNS.
+
                     Mot de passe par defaut:
                     > `kubectl port-forward -n vault svc/vault-ui 8200`
-                    > https://localhost:8200/ui/vault/secrets/kv/show/${{inputs.nom_club}}-grav/default/grav/${{inputs.nom_club}}-grav-init-pwd
+                    > https://localhost:8200/ui/vault/secrets/kv/show/${{ steps.vars.outputs.namespace }}/default/grav/${{ steps.vars.outputs.deployment_prefix }}-grav-init-pwd
                 token: ${{ secrets.PULL_REQUEST_TOKEN }}
