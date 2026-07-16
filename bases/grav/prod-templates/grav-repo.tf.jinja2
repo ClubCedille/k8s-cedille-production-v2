@@ -1,4 +1,4 @@
-resource "github_repository" "repo_{{deployment_prefix}}" {
+resource "github_repository" "repo_{{ tf_resource_name }}" {
   name = "{{repo_name}}"
   auto_init = true
   homepage_url = "https://{{hostname}}"
@@ -20,8 +20,8 @@ resource "github_repository" "repo_{{deployment_prefix}}" {
   visibility = "public"
 }
 
-resource "github_repository_webhook" "webhook_{{deployment_prefix}}" {
-  repository = github_repository.repo_{{deployment_prefix}}.name
+resource "github_repository_webhook" "webhook_{{ tf_resource_name }}" {
+  repository = github_repository.repo_{{ tf_resource_name }}.name
 
   configuration {
     url          = "https://{{hostname}}/_git_webhook"
@@ -34,13 +34,13 @@ resource "github_repository_webhook" "webhook_{{deployment_prefix}}" {
   events = ["push"]
 }
 
-resource "github_repository_dependabot_security_updates" "dependabot_{{deployment_prefix}}" {
-  repository  = github_repository.repo_{{deployment_prefix}}.name
+resource "github_repository_dependabot_security_updates" "dependabot_{{ tf_resource_name }}" {
+  repository  = github_repository.repo_{{ tf_resource_name }}.name
   enabled     = true
 }
 
-resource "github_repository_collaborators" "colaborators_{{deployment_prefix}}" {
-  repository = github_repository.repo_{{deployment_prefix}}.name
+resource "github_repository_collaborators" "colaborators_{{ tf_resource_name }}" {
+  repository = github_repository.repo_{{ tf_resource_name }}.name
 
   team {
     permission = "admin"

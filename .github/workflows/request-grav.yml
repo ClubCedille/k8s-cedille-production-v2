@@ -119,6 +119,7 @@ jobs:
                 namespace="$deployment_prefix-grav"
                 repo_name="$hostname"
                 repo_url="https://github.com/ClubCedille/$hostname.git"
+                tf_resource_name="${deployment_prefix//-/_}"
 
                 {
                   echo "deployment_prefix=$deployment_prefix"
@@ -126,8 +127,10 @@ jobs:
                   echo "hostname=$hostname"
                   echo "repo_name=$repo_name"
                   echo "repo_url=$repo_url"
+                  echo "tf_resource_name=$tf_resource_name"
                   echo "j2_vars<<EOF"
                   echo "deployment_prefix=$deployment_prefix"
+                  echo "tf_resource_name=$tf_resource_name"
                   echo "repo_name=$repo_name"
                   echo "repo_url=$repo_url"
                   echo "namespace=$namespace"
@@ -152,6 +155,13 @@ jobs:
               with:
                 template: bases/grav/prod-templates/vault-patch.yaml.jinja2
                 output_file: apps/${{ steps.vars.outputs.deployment_prefix }}/grav/prod/vault-patch.yaml
+                strict: true
+                variables: ${{ steps.vars.outputs.j2_vars }}
+            - name: Create vault secret sync
+              uses: cuchi/jinja2-action@v1.3.0
+              with:
+                template: bases/grav/prod-templates/vault-secret.yaml.jinja2
+                output_file: apps/${{ steps.vars.outputs.deployment_prefix }}/grav/prod/vault-secret.yaml
                 strict: true
                 variables: ${{ steps.vars.outputs.j2_vars }}
             - name: Create terraform repo
