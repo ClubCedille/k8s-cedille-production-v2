@@ -37,6 +37,13 @@ data:
     git clean -fd -e accounts -e data
     git branch --set-upstream-to="origin/$branch"
 
+    git_exclude=".git/info/exclude"
+    for pattern in accounts/ data/ config/security.yaml config/plugins/git-sync.yaml; do
+      if ! grep -Fxq "$pattern" "$git_exclude"; then
+        echo "$pattern" >> "$git_exclude"
+      fi
+    done
+
     if [ ! -d pages ] || [ ! -d plugins ] || [ ! -d themes ]; then
       echo "remote repository is missing Grav site content; seeding initial skeleton..."
       for path in config pages plugins themes .gitignore; do
@@ -45,6 +52,7 @@ data:
           cp -a "$skeleton_dir/$path" .
         fi
       done
+      rm -f config/security.yaml
 
       git add config pages plugins themes
       if [ -e .gitignore ]; then
@@ -59,6 +67,10 @@ data:
     fi
 
     echo "done"
+
+    if git ls-files --error-unmatch config/security.yaml >/dev/null 2>&1; then
+      git update-index --skip-worktree config/security.yaml
+    fi
 
     mkdir -p /var/www/html/user/config/plugins
     ln -sf "/vault/secrets/$GIT_VAULT_SECRET" /var/www/html/user/config/plugins/git-sync.yaml
