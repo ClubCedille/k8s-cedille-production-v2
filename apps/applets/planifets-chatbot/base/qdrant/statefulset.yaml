@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: planifets-chatbot-qdrant
   annotations:
-    kube-score/ignore: pod-networkpolicy, pod-probes, container-image-tag
+    kube-score/ignore: pod-networkpolicy, pod-probes
 spec:
   serviceName: planifets-chatbot-qdrant
   replicas: 1
@@ -22,7 +22,7 @@ spec:
           emptyDir: {}
       containers:
         - name: qdrant
-          image: qdrant/qdrant:latest
+          image: qdrant/qdrant@sha256:0bd98fa7977f1e75694779359ca4e212822e5a71334e28421182f72f209d5286
           imagePullPolicy: Always
           ports:
             - containerPort: 6333
@@ -62,6 +62,7 @@ spec:
           securityContext:
             runAsUser: 10001
             runAsGroup: 10001
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: qdrant-storage
               mountPath: /qdrant/storage

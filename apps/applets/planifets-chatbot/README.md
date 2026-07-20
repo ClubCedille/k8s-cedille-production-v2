@@ -8,15 +8,15 @@ Ce dossier ne contient plus une stack frontend/backend complète : il gère uniq
 
 | Composant | Image | Port | Rôle |
 |-----------|-------|------|------|
-| Qdrant | `qdrant/qdrant:latest` | `6333` / `6334` | Base vectorielle du chatbot |
+| Qdrant | `qdrant/qdrant@sha256:...` | `6333` / `6334` | Base vectorielle du chatbot |
 
 ## Environnements
 
 | Env | Namespace | ArgoCD Application | Secret Vault |
 |-----|-----------|--------------------|--------------|
-| dev | `planifets-chatbot-dev` | `planifets-chatbot-dev` | `kv/data/planifets-chatbot/dev/planifets-chatbot/qdrant` |
-| staging | `planifets-chatbot-staging` | `planifets-chatbot-staging` | `kv/data/planifets-chatbot/staging/planifets-chatbot/qdrant` |
-| prod | `planifets-chatbot` | `planifets-chatbot` | `kv/data/planifets-chatbot/default/planifets-chatbot/qdrant` |
+| dev | `planifets-dev` | `planifets-chatbot-dev` | `kv/data/planifets-dev/default/chatbot/qdrant` |
+| staging | `planifets-staging` | `planifets-chatbot-staging` | `kv/data/planifets-staging/default/chatbot/qdrant` |
+| prod | `planifets` | `planifets-chatbot` | `kv/data/planifets/default/chatbot/qdrant` |
 
 ## Structure actuelle
 
@@ -46,9 +46,9 @@ Chaque environnement crée un secret Kubernetes `planifets-chatbot-secret` conte
 
 ### Chemins Vault attendus
 
-- `dev` → `kv/data/planifets-chatbot/dev/planifets-chatbot/qdrant`
-- `staging` → `kv/data/planifets-chatbot/staging/planifets-chatbot/qdrant`
-- `prod` → `kv/data/planifets-chatbot/default/planifets-chatbot/qdrant`
+- `dev` → `kv/data/planifets-dev/default/chatbot/qdrant`
+- `staging` → `kv/data/planifets-staging/default/chatbot/qdrant`
+- `prod` → `kv/data/planifets/default/chatbot/qdrant`
 
 ## Déploiement
 
@@ -59,17 +59,17 @@ Chaque environnement crée un secret Kubernetes `planifets-chatbot-secret` conte
 ### Vérifications utiles
 
 ```bash
-kubectl get pods -n planifets-chatbot-dev
-kubectl get pods -n planifets-chatbot-staging
-kubectl get pods -n planifets-chatbot
+kubectl get pods -n planifets-dev
+kubectl get pods -n planifets-staging
+kubectl get pods -n planifets
 
-kubectl get secret -n planifets-chatbot-dev planifets-chatbot-secret
-kubectl get statefulset -n planifets-chatbot-dev planifets-chatbot-qdrant
-kubectl get svc -n planifets-chatbot-dev planifets-chatbot-qdrant
+kubectl get secret -n planifets-dev planifets-chatbot-secret
+kubectl get statefulset -n planifets-dev planifets-chatbot-qdrant
+kubectl get svc -n planifets-dev planifets-chatbot-qdrant
 ```
 
 ## Notes
 
 - Le stockage persistant Qdrant utilise un `volumeClaimTemplate` de `5Gi` avec `storageClassName: cephfs`.
 - Le service expose les ports `6333` (HTTP) et `6334` (gRPC).
-- Les trois overlays (`dev`, `staging`, `prod`) réutilisent la base `qdrant` et ne diffèrent que par leur secret Vault.
+- Chaque overlay fixe explicitement le digest Qdrant. Pour mettre Qdrant à jour, changer d'abord le digest dev, valider, puis promouvoir exactement le même digest vers staging et prod.
