@@ -44,3 +44,26 @@ patches:
       - op: replace
         path: /spec/path
         value: kv/data/raconteurs-grav/default/grav
+  - target:
+      kind: Deployment
+      name: grav
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 1Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/startupProbe
+        value:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 60
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe
+        value:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
