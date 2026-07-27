@@ -65,6 +65,6 @@ patches:
           httpGet:
             path: /
             port: 8080
-          periodSeconds: 10
-          timeoutSeconds: 5
+          periodSeconds: 30
+          timeoutSeconds: 30
           failureThreshold: 6
