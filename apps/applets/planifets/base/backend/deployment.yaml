@@ -72,6 +72,21 @@ spec:
                 secretKeyRef:
                   name: planifets-chatbot-secret
                   key: qdrant_api_key
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: planifets-secret
+                  key: gemini_api_key
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: planifets-secret
+                  key: groq_api_key
+            - name: NVIDIA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: planifets-secret
+                  key: nvidia_api_key
           livenessProbe:
             httpGet:
               path: /api/health
