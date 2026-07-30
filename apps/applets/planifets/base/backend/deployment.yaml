@@ -70,7 +70,7 @@ spec:
             - name: QDRANT_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: planifets-chatbot-secret
+                  name: planifets-secret
                   key: qdrant_api_key
             - name: GEMINI_API_KEY
               valueFrom:
