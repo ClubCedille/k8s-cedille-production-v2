@@ -26,7 +26,7 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: shell-provider
-          image: ghcr.io/clubcedille/shell-provider:latest
+          image: ghcr.io/clubcedille/shell-provider:1.0.0
           imagePullPolicy: Always
           command:
             ['/bin/sh', '-c', '/shell_provider --port 6000']
