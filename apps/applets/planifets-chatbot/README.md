@@ -16,7 +16,7 @@ Ce dossier ne contient plus une stack frontend/backend complète : il gère uniq
 |-----|-----------|--------------------|--------------|
 | dev | `planifets-dev` | `planifets-chatbot-dev` | `kv/data/planifets-dev/default/chatbot/qdrant` |
 | staging | `planifets-staging` | `planifets-chatbot-staging` | `kv/data/planifets-staging/default/chatbot/qdrant` |
-| prod | `planifets` | `planifets-chatbot` | `kv/data/planifets/default/chatbot/qdrant` |
+| prod | `planifets` | `planifets-chatbot` | `kv/data/planifets/default/planifets/planifets-backend` |
 
 ## Structure actuelle
 
@@ -48,11 +48,11 @@ Chaque environnement crée un secret Kubernetes `planifets-chatbot-secret` conte
 
 - `dev` → `kv/data/planifets-dev/default/chatbot/qdrant`
 - `staging` → `kv/data/planifets-staging/default/chatbot/qdrant`
-- `prod` → `kv/data/planifets/default/chatbot/qdrant`
+- `prod` → `kv/data/planifets/default/planifets/planifets-backend`
 
 ## Déploiement
 
-1. Créer ou mettre à jour la valeur `api_key` dans le chemin Vault de l'environnement visé.
+1. Créer ou mettre à jour la valeur `api_key` pour `dev`/`staging`, ou `qdrant_api_key` pour `prod`, dans le chemin Vault de l'environnement visé.
 2. Laisser ArgoCD synchroniser l'application correspondante.
 3. Vérifier que le secret `planifets-chatbot-secret` et le StatefulSet Qdrant sont bien présents dans le namespace.
 
