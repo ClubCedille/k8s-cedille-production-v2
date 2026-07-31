@@ -52,8 +52,11 @@ spec:
             - name: EMAIL_SUBJECT
               value: Submission
           livenessProbe:
-            tcpSocket:
-              port: 4000
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - grep -qa email_provider /proc/1/cmdline
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
