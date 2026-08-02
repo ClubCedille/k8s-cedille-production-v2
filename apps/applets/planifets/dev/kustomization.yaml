@@ -9,3 +9,4 @@ resources:
 
 patches:
   - path: patch-replicas.yaml
+  - path: patch-chatbot-enabled.yaml

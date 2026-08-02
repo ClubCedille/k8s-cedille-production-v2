@@ -52,11 +52,7 @@ spec:
                   name: planifets-secret
                   key: posthog_api_key
             - name: CHATBOT_ENABLED
-              valueFrom:
-                secretKeyRef:
-                  name: planifets-secret
-                  key: chatbot_enabled
-                  optional: true
+              value: "false"
             - name: LOG_LEVELS
               value: "log,error,warn"
             - name: YARN_CACHE_FOLDER
